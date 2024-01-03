@@ -12,7 +12,7 @@ export interface ElementInfo {
 	att: Attributes,
 }
 
-export interface Attributes {
+export type  Attributes = {
 	name: string,
 	inverse: boolean,
 	chartStyle: string,

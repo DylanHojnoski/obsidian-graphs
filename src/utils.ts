@@ -3,7 +3,7 @@ import { MarkdownPostProcessorContext, parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo } from "./types";
 
 export function parseCodeBlock(codeBlock: HTMLElement, context: MarkdownPostProcessorContext) :GraphInfo {
-	let graph: GraphInfo = {};
+	let graph: GraphInfo = {bounds: [],keepAspectRatio: true, showNavigation: true, elements: []};
 	const content = codeBlock.textContent;
 
 	// there is nothing inside of the codeblock
