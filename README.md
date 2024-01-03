@@ -8,23 +8,27 @@ This file only covers the basics of how to use this plugin for more information 
 
 To create a graph create a code block with the language set to graph.
 
+````
 ```graph
 bounds: [Xmin, Ymax, Xmax, Ymin]
 elements: [
 	{type: "name", def: []}
 ]
 ```
+````
 
 ### Example
 
+````
 ```graph
 bounds: [-10, 10, 10, -10]
 elements: [
 	{type: "line", def: [[0,0],[4,1]]}
 ]
 ```
+````
 
-![Graph wit line](./images/line.png)
+![Graph with line](./images/line.png)
 
 ## Bugs
 
