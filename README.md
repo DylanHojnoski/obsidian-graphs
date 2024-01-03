@@ -39,5 +39,5 @@ If you want to contribute please create an issue or pull request.
 
 This plugin uses 
 
-	* [JSXGraph](https://jsxgraph.org/wp/index.html)
+- [JSXGraph](https://jsxgraph.org/wp/index.html)
 
