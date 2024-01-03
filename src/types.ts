@@ -20,6 +20,7 @@ export interface Attributes {
 	fillColor: string,
 	strokeColor: string,
 	fillOpacity: number,
+	anchor: string,
 }
 
 export enum Types {
@@ -41,6 +42,7 @@ export enum Types {
 	Inequality = "inequality",
 	Integral = "integral",
 	Intersection = "intersection",
+	Label = "label",
 	Line = "line",
 	Parabola = "parabola",
 	Parallel = "parallel",
@@ -56,4 +58,5 @@ export enum Types {
 	Stepfunction = "stepfunction",
 	Tangent = "tangent",
 	Tapemeasure = "tapemeasure",
+	Text = "text",
 }
