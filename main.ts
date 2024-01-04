@@ -27,7 +27,7 @@ export default class ObsidianGraphs extends Plugin {
 			// go through all codeblocks and check if they are graph
 			for (const codeblock of codeblocks) {
 
-				if (codeblock.className.replace("language-", "") != "graph") {
+				if (codeblock.className != "language-graph") {
 					continue;
 				}
 
@@ -101,4 +101,4 @@ export default class ObsidianGraphs extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-}
+ }

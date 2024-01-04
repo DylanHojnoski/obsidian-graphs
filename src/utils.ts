@@ -41,6 +41,7 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 												axis: true,
 												showCopyright: false,
 												showNavigation: graphInfo.showNavigation,
+												pan: {needTwoFingers: true},
 												keepAspectRatio: graphInfo.keepAspectRatio});
 
 	return graph;
@@ -115,29 +116,30 @@ function checkForComposedElements(element: ElementInfo, eindex: number,  created
 
 function checkForFunction(element: ElementInfo, eindex: number, createdElements: GeometryElement[]) {
 	// regex to check if it is the start of a function
-	const f = RegExp("^f:")
+	const f = RegExp("f:")
 
 	// if the def is a string and passes regex crreate the function
 	if (typeof element.def[eindex] === 'string' && f.test(element.def[eindex])) {
 		// regex to check if function contains an element
-		const re = RegExp("e[0-9]+");
+		const re = RegExp(/e[0-9]+/);
+		element.def[eindex] = element.def[eindex].replace("f:", "")
 
 		// function uses composed elements
-		if (typeof element.def[0] === 'string' && re.test(element.def[eindex])) {
+		if (typeof element.def[eindex] === 'string' && re.test(element.def[eindex])) {
 			// get the composed elements
-			const composed = re.exec(element.def[eindex]);
-			if (composed != null) {
+			let composed = re.exec(element.def[eindex]);
+			while (composed != null) {
 				// go through composed elements and and validate and replace with proper string
-				for (let i = 0; i < composed.length; i++) {
-					const index = Number.parseInt(composed[i].replace("e", ""));
-					if (index < 0 || index >= createdElements.length) {
-						throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
-					}
-
-					const equation: string = element.def[eindex].replace(re, "createdElements["+index+"].Value()");
-					element.def[eindex] = function(x:number) {return eval(equation);};
+				const index = Number.parseInt(composed[0].replace("e", ""));
+				if (index < 0 || index >= createdElements.length) {
+					throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
 				}
+
+				element.def[eindex] = element.def[eindex].replace(re, "createdElements["+index+"].Value()");
+				composed = re.exec(element.def[eindex]);
 			}
+			const equation = element.def[eindex];
+			element.def[eindex] = function(x:number) {return eval(equation);};
 
 		}
 		else { // no composed elements
