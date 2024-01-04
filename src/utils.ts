@@ -112,6 +112,21 @@ function checkForComposedElements(element: ElementInfo, eindex: number,  created
 			element.def[eindex] = createdElements[index];
 		}
 	}
+
+	if (element.att != undefined) {
+		if (typeof element.att.anchor === 'string' && re.test(element.att.anchor)) {
+			const index = Number.parseInt(element.att.anchor.substring(1,element.att.anchor.length));
+
+			// checks if it is a valid element
+			if (index >= createdElements.length) {
+				throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+			}
+			else {
+				element.att.anchor = createdElements[index];
+			}
+		}
+
+	}
 }
 
 function checkForFunction(element: ElementInfo, eindex: number, createdElements: GeometryElement[]) {

@@ -1,3 +1,4 @@
+import { GeometryElement } from "jsxgraph";
 
 export interface GraphInfo {
 	bounds: number[],
@@ -20,7 +21,7 @@ export type  Attributes = {
 	fillColor: string,
 	strokeColor: string,
 	fillOpacity: number,
-	anchor: string,
+	anchor: string | GeometryElement,
 }
 
 export enum Types {
@@ -35,6 +36,7 @@ export enum Types {
 	CurveDifference  = "curvedifference",
 	CurveIntersection = "curveintersection",
 	CurveUnion = "curveunion",
+	Derivaative = "derivative",
 	Ellipse = "ellipse",
 	Function = "functiongraph",
 	Glider = "glider",
@@ -59,4 +61,5 @@ export enum Types {
 	Tangent = "tangent",
 	Tapemeasure = "tapemeasure",
 	Text = "text",
+
 }
