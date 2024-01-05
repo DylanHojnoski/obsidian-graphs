@@ -153,13 +153,16 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 				element.def[eindex] = element.def[eindex].replace(re, "createdElements["+index+"].Value()");
 				composed = re.exec(element.def[eindex]);
 			}
-			const equation = element.def[eindex];
-			element.def[eindex] = function(x:number) {return eval(equation);};
 
+			const args = {
+			}
+
+			const equation = element.def[eindex];
+			element.def[eindex] = new Function("createdElements", "x", "return " + equation + ";").bind(args, createdElements);
 		}
 		else { // no composed elements
 			const equation = element.def[eindex];
-			element.def[eindex] = function(x: number) {return eval(equation);};
+			element.def[eindex] = new Function("x", "return " + equation + ";");
 		}
 	}
 }
