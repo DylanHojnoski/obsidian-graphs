@@ -9,48 +9,39 @@ export default class ObsidianGraphs extends Plugin {
 	graphDivs: HTMLElement[] = [];
 
 	async onload () {
-		await this.loadSettings();
 
-		this.registerMarkdownPostProcessor((element, context) => {
-			const codeblocks: HTMLElement[]  = element.findAll("code");
-
-			// go through all codeblocks and check if they are graph
-			for (const codeblock of codeblocks) {
-
-				if (codeblock.className != "language-graph") {
-					continue;
-				}
+		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
 				let graphInfo: GraphInfo;
 
 				try {
 					// parse the JSON from the code block
-					graphInfo =  parseCodeBlock(codeblock, context);
+					graphInfo  =  parseCodeBlock(source);
 				} catch (e) {
-					renderError(e, codeblock);
-					continue;
+					renderError(e,element);
+					return;
 				}
 
 				let board: Board;
 
 				// create the div that contains the board
-				const graphDiv = codeblock.createEl("div", {cls: "jxgbox"});
+				const graphDiv =element.createEl("div", {cls: "jxgbox"});
 				graphDiv.id = "box";
 				this.graphDivs.push(graphDiv);
+
 
 				try {
 					// create the board
 					board = createBoard(graphDiv, graphInfo);
 				} catch (e) {
-					renderError(e, codeblock);
-					continue;
+					renderError(e,element);
+					return;
 				}
 
 				this.boards.push(board);
 
 				const createdElements: GeometryElement[] = [];
 
-				let elementError = false;
 				if (graphInfo.elements != undefined) {
 
 					// add every element to the graph 
@@ -58,18 +49,13 @@ export default class ObsidianGraphs extends Plugin {
 						try {
 							addElement(board, graphInfo.elements[i], createdElements);
 						} catch (e) {
-							renderError(e, codeblock);
-							elementError = true;
-							continue;
+							renderError(e,element);
+							return;
 						}
 					}
 				}
 
-				// if the is no elementError then display the graph
-				if (!elementError) {
-					codeblock.replaceWith(graphDiv);
-				}
-			}
+				element.replaceWith(graphDiv);
 		});
 
 	}
@@ -84,11 +70,4 @@ export default class ObsidianGraphs extends Plugin {
 		}
 	}
 
-	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
-	}
  }

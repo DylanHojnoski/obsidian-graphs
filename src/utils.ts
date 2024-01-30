@@ -1,18 +1,17 @@
 import { Board, JSXGraph, GeometryElement } from "jsxgraph";
-import { MarkdownPostProcessorContext, parseYaml } from "obsidian";
+import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo } from "./types";
 
-export function parseCodeBlock(codeBlock: HTMLElement, context: MarkdownPostProcessorContext) :GraphInfo {
-	let graph: GraphInfo = {bounds: [],keepAspectRatio: true, showNavigation: true, elements: []};
-	const content = codeBlock.textContent;
+export function parseCodeBlock(source: string) :GraphInfo {
+	let graph: GraphInfo = {bounds: [],keepAspectRatio: false, showNavigation: true, elements: []};
 
 	// there is nothing inside of the codeblock
-	if (content == null) {
+	if (source == null || source == "") {
 		return graph;
 	}
 
 	try {
-		graph = parseYaml(content);
+		graph = parseYaml(source);
 
 		if (graph.showNavigation == undefined) {
 			graph.showNavigation = true;
@@ -26,6 +25,7 @@ export function parseCodeBlock(codeBlock: HTMLElement, context: MarkdownPostProc
 
 export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board {
 
+	// make sure that the are defined
 	if (graphInfo.bounds == undefined && graphInfo.elements == undefined && graphInfo.keepAspectRatio == undefined) {
 		throw new SyntaxError("No info is defined");
 	}
@@ -37,6 +37,7 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 	const ymin = graphInfo.bounds[3];
 	const ymax = graphInfo.bounds[1];
 
+	// create the board for the graph
 	const graph = JSXGraph.initBoard(graphDiv, {boundingBox: [xmin, ymax, xmax, ymin],
 												axis: true,
 												showCopyright: false,
@@ -158,6 +159,7 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 			}
 
 			const equation = element.def[eindex];
+			// create function that is used to calculate the values
 			element.def[eindex] = new Function("createdElements", "x", "return " + equation + ";").bind(args, createdElements);
 		}
 		else { // no composed elements
