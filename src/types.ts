@@ -61,5 +61,4 @@ export enum Types {
 	Tangent = "tangent",
 	Tapemeasure = "tapemeasure",
 	Text = "text",
-
 }

@@ -4,17 +4,7 @@ import { renderError } from 'src/error';
 import { GraphInfo } from 'src/types';
 import { addElement, createBoard, parseCodeBlock } from 'src/utils';
 
-
-interface ObsidianGraphsSettings {
-	mySetting: string;
-}
-
-const DEFAULT_SETTINGS: ObsidianGraphsSettings = {
-	mySetting: 'default'
-}
-
 export default class ObsidianGraphs extends Plugin {
-	settings: ObsidianGraphsSettings;
 	boards: Board[] = [];
 	graphDivs: HTMLElement[] = [];
 
