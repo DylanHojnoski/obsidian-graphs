@@ -19,6 +19,8 @@ elements: [
 
 ### Examples
 
+#### Line
+
 ````
 ```graph
 bounds: [-10, 10, 10, -10]
@@ -29,6 +31,8 @@ elements: [
 ````
 
 ![Graph with line](./images/line.png)
+
+#### Sin Riemannsum
 
 ````
 ```graph
