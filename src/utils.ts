@@ -3,7 +3,7 @@ import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo } from "./types";
 
 export function parseCodeBlock(source: string) :GraphInfo {
-	let graph: GraphInfo = {bounds: [],keepAspectRatio: false, showNavigation: true, elements: []};
+	let graph: GraphInfo = {bounds: [], keepAspectRatio: false, showNavigation: true, elements: []};
 
 	// there is nothing inside of the codeblock
 	if (source == null || source == "") {
@@ -160,11 +160,11 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 
 			const equation = element.def[eindex];
 			// create function that is used to calculate the values
-			element.def[eindex] = new Function("createdElements", "x", "return " + equation + ";").bind(args, createdElements);
+			element.def[eindex] = new Function("createdElements", "x", "y", "return " + equation + ";").bind(args, createdElements);
 		}
 		else { // no composed elements
 			const equation = element.def[eindex];
-			element.def[eindex] = new Function("x", "return " + equation + ";");
+			element.def[eindex] = new Function("x", "y", "return " + equation + ";");
 		}
 	}
 }
