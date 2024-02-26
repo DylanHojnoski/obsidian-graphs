@@ -151,16 +151,13 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 					throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
 				}
 
-				element.def[eindex] = element.def[eindex].replace(re, "createdElements["+index+"].Value()");
+				element.def[eindex] = element.def[eindex].replace(re, "createdElements["+index+"]");
 				composed = re.exec(element.def[eindex]);
-			}
-
-			const args = {
 			}
 
 			const equation = element.def[eindex];
 			// create function that is used to calculate the values
-			element.def[eindex] = new Function("createdElements", "x", "y", "return " + equation + ";").bind(args, createdElements);
+			element.def[eindex] = new Function("createdElements", "x", "y", "return " + equation + ";").bind(createdElements);
 		}
 		else { // no composed elements
 			const equation = element.def[eindex];
