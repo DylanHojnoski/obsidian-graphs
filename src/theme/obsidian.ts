@@ -1,12 +1,12 @@
-import JXG from "jsxgraph";
 // Constants for this theme:
-const color = "#FFF",
-	interactiveAccent = "var(--interactive-accent)",
+const interactiveAccent = "var(--interactive-accent)",
 	interactiveAccentHover = "var(--interactive-accent-hover)",
 	textNormal = "var(--text-normal)",
 	textMuted = "var(--text-muted)";
 
 
+
+// @ts-ignore
 JXG.themes['obsidian'] = {
 
 	board: {
@@ -30,13 +30,6 @@ JXG.themes['obsidian'] = {
 	ellipse: {
 		strokeColor: interactiveAccent,
 		fillColor: interactiveAccent,
-	},
-
-	integral: {
-		path: {
-			strokeColor: interactiveAccent,
-			fillColor: interactiveAccent,
-		},
 	},
 
 
@@ -71,7 +64,7 @@ JXG.themes['obsidian'] = {
 		strokeColor: interactiveAccent,
 		fillColor: interactiveAccent,
 		highlightStrokeColor: interactiveAccentHover,
-		highlightFillColor: color,
+		highlightFillColor: interactiveAccentHover,
 	},
 
 	circle: {
@@ -80,13 +73,13 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 		center: {
 			fillColor: interactiveAccent,
-			strokeColor: color,
-			highlightFillColor: color,
+			strokeColor: interactiveAccent,
+			highlightFillColor: interactiveAccentHover,
 			highlightStrokeColor: interactiveAccentHover
 		},
 		point2: {
 			fillColor: interactiveAccent,
-			strokeColor: color,
+			strokeColor: interactiveAccent,
 			highlightFillColor: interactiveAccentHover,
 			highlightStrokeColor: interactiveAccentHover
 		}
@@ -98,7 +91,7 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 		center: {
 			fillColor: interactiveAccent,
-			strokeColor: color,
+			strokeColor: interactiveAccent,
 			highlightFillColor: interactiveAccentHover,
 			highlightStrokeColor: interactiveAccentHover
 		}
@@ -146,7 +139,7 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 		center: {
 			fillColor: interactiveAccent,
-			strokeColor: color,
+			strokeColor: interactiveAccent,
 			highlightFillColor: interactiveAccentHover,
 			highlightStrokeColor: interactiveAccentHover
 		}
@@ -216,6 +209,26 @@ JXG.themes['obsidian'] = {
 		}
 	},
 
+	regularpolygon: {
+		fillColor: interactiveAccent,
+		highlightFillColor: interactiveAccentHover,
+		vertices: {
+			fillColor: interactiveAccent,
+			strokeColor: interactiveAccent,
+			highlightFillColor: interactiveAccentHover,
+			highlightStrokeColor: interactiveAccentHover
+		},
+		borders: {
+			strokeColor: interactiveAccent,
+			highlightStrokeColor: interactiveAccentHover,
+		}
+	},
+
+	riemannsum: {
+		fillColor: interactiveAccent,
+		highlightFillColor: interactiveAccentHover,
+	},
+
 	sector: {
 		strokeColor: interactiveAccent,
 		fillColor: interactiveAccent,
@@ -244,18 +257,16 @@ JXG.themes['obsidian'] = {
 			highlightStrokeColor: textMuted
 		},
 		highline: {
-			name: '',
 			strokeColor: interactiveAccent,
 			highlightStrokeColor: interactiveAccentHover
 		},
 		ticks: {
-			strokeColor: textNormal 
+			strokeColor: interactiveAccent,
 		}
 	},
 
 	slopefield: {
 		highlightStrokeColor: interactiveAccentHover,
-		highlightStrokeOpacity: 0.8
 	},
 
 	tapemeasure: {
@@ -289,8 +300,23 @@ JXG.themes['obsidian'] = {
 	turtle: {
 		strokeColor: interactiveAccent,
 		arrow: {
-			strokeColor: '#aaaaaa55'
+			strokeColor: interactiveAccent
 		}
+	},
+
+	integral: {
+		color: interactiveAccent,
+		strokeColor: interactiveAccent,
+		fillColor: interactiveAccent,
+		highlightFillColor: interactiveAccentHover,
+		highlightStrokeColor: interactiveAccentHover,
+		curveLeft: {
+			color: interactiveAccent,
+
+		},
+		curveRight: {
+			color: interactiveAccent,
+		},
 	},
 
 	vectorfield: {
