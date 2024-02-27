@@ -4,6 +4,7 @@ export interface GraphInfo {
 	bounds: number[],
 	keepAspectRatio: boolean,
 	showNavigation: boolean,
+	axis: boolean,
 	elements: ElementInfo[],
 }
 

@@ -3,7 +3,7 @@ import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo } from "./types";
 
 export function parseCodeBlock(source: string) :GraphInfo {
-	let graph: GraphInfo = {bounds: [], keepAspectRatio: false, showNavigation: true, elements: []};
+	let graph: GraphInfo = {bounds: [], keepAspectRatio: false, showNavigation: true, axis: true,  elements: []};
 
 	// there is nothing inside of the codeblock
 	if (source == null || source == "") {
@@ -15,6 +15,10 @@ export function parseCodeBlock(source: string) :GraphInfo {
 
 		if (graph.showNavigation == undefined) {
 			graph.showNavigation = true;
+		}
+
+		if (graph.axis == undefined) {
+			graph.axis = true;
 		}
 
 		return graph;
@@ -39,7 +43,7 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 
 	// create the board for the graph
 	const graph = JSXGraph.initBoard(graphDiv, {boundingBox: [xmin, ymax, xmax, ymin],
-												axis: true,
+												axis: graphInfo.axis,
 												showCopyright: false,
 												showNavigation: graphInfo.showNavigation,
 												pan: {needTwoFingers: true},
