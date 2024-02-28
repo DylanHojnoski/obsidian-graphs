@@ -132,7 +132,44 @@ function checkForComposedElements(element: ElementInfo, eindex: number,  created
 				element.att.anchor = createdElements[index];
 			}
 		}
+		if (typeof element.att.fillColor === 'string') {
+			element.att.fillColor = changeColorValue(element.att.fillColor);
 
+		}
+		if (typeof element.att.strokeColor === 'string') {
+			element.att.strokeColor = changeColorValue(element.att.strokeColor);
+		}
+		if (typeof element.att.highlightFillColor === 'string') {
+			element.att.highlightFillColor= changeColorValue(element.att.highlightFillColor);
+
+		}
+		if (typeof element.att.highlightStrokeColor === 'string') {
+			element.att.highlightStrokeColor = changeColorValue(element.att.highlightStrokeColor);
+		}
+
+	}
+}
+
+function changeColorValue(value: string): string {
+	switch(value) {
+		case "red":
+			return "var(--color-red)";
+		case "orange":
+			return "var(--color-orange)";
+		case "yellow":
+			return "var(--color-yellow)";
+		case "green":
+			return "var(--color-green)";
+		case "cyan":
+			return "var(--color-cyan)";
+		case "blue":
+			return "var(--color-blue)";
+		case "purple":
+			return "var(--color-purple)";
+		case "pink":
+			return "var(--color-pink)";
+		default:
+			return value;
 	}
 }
 
