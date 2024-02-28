@@ -79,9 +79,9 @@ JXG.themes['obsidian'] = {
 		},
 		point2: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted 
 		}
 	},
 
@@ -159,15 +159,15 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 		point1: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted 
 		},
 		point2: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted
 		}
 	},
 
@@ -189,9 +189,9 @@ JXG.themes['obsidian'] = {
 
 	point: {
 		fillColor: interactiveAccent,
-		strokeColor: interactiveAccent,
+		strokeColor: textNormal,
 		highlightFillColor: interactiveAccentHover,
-		highlightStrokeColor: interactiveAccentHover
+		highlightStrokeColor: textMuted 
 	},
 
 	polygon: {
@@ -199,9 +199,9 @@ JXG.themes['obsidian'] = {
 		highlightFillColor: interactiveAccentHover,
 		vertices: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted
 		},
 		borders: {
 			strokeColor: interactiveAccent,
@@ -214,9 +214,9 @@ JXG.themes['obsidian'] = {
 		highlightFillColor: interactiveAccentHover,
 		vertices: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted
 		},
 		borders: {
 			strokeColor: interactiveAccent,
@@ -245,23 +245,26 @@ JXG.themes['obsidian'] = {
 
 	slider: {
 		fillColor: interactiveAccent,
-		strokeColor: interactiveAccent,
+		strokeColor: textNormal,
 		highlightFillColor: interactiveAccentHover,
-		highlightStrokeColor: interactiveAccentHover,
+		highlightStrokeColor: textMuted,
 		baseline: {
-			strokeColor: interactiveAccent,
-			highlightStrokeColor: interactiveAccentHover
+			strokeColor: textNormal,
+			highlightStrokeColor:textMuted 
 		},
 		label: {
 			strokeColor: textNormal,
+			fillColor: textNormal,
 			highlightStrokeColor: textMuted
 		},
 		highline: {
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
+			fillColor: textNormal,
 			highlightStrokeColor: interactiveAccentHover
 		},
 		ticks: {
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
+			fillColor: textNormal,
 		}
 	},
 
@@ -274,15 +277,15 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 		point1: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted 
 		},
 		point2: {
 			fillColor: interactiveAccent,
-			strokeColor: interactiveAccent,
+			strokeColor: textNormal,
 			highlightFillColor: interactiveAccentHover,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted 
 		},
 		ticks: {
 		}
