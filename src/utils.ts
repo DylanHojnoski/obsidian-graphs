@@ -46,6 +46,8 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 												axis: graphInfo.axis,
 												showCopyright: false,
 												showNavigation: graphInfo.showNavigation,
+												//@ts-ignore
+												theme: 'obsidian',
 												pan: {needTwoFingers: true},
 												keepAspectRatio: graphInfo.keepAspectRatio});
 

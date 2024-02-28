@@ -3,6 +3,7 @@ import { Plugin } from 'obsidian';
 import { renderError } from 'src/error';
 import { GraphInfo } from 'src/types';
 import { addElement, createBoard, parseCodeBlock } from 'src/utils';
+import "./src/theme/obsidian.ts"
 
 export default class ObsidianGraphs extends Plugin {
 	boards: Board[] = [];

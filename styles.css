@@ -4,10 +4,10 @@
     position: relative;
     overflow: hidden;
 	height: 300px;
-    background-color: #fff;
+    background-color: var(--background-secondary);
     border-style: solid;
     border-width: 1px;
-    border-color: #356aa0;
+    border-color: var(--background-modifier-border);
     border-radius: 10px;
     -webkit-border-radius: 10px;
     margin: 0;
@@ -72,12 +72,12 @@
 }
 
 .JXG_navigation_button {
-    color: #666;
+    color: var(--text-muted);
 }
 
 .JXG_navigation_button:hover {
     border-radius: 2px;
-    background: rgba(184, 184, 184, 0.5);
+    background: var(--background-modifier-hover);
 }
 
 .JXG_navigation_button svg {

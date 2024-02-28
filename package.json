@@ -23,6 +23,6 @@
 		"typescript": "4.7.4"
 	},
 	"dependencies": {
-		"jsxgraph": "^1.6.2"
+		"jsxgraph": "^1.7.0"
 	}
 }
