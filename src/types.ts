@@ -20,7 +20,9 @@ export type  Attributes = {
 	chartStyle: string,
 	paramArray: string,
 	fillColor: string,
+	highlightFillColor: string,
 	strokeColor: string,
+	highlightStrokeColor: string,
 	fillOpacity: number,
 	anchor: string | GeometryElement,
 }
