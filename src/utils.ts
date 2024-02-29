@@ -209,21 +209,14 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 				composed = re.exec(element.def[eindex]);
 			}
 
-			argsArray.push("createdElements");
-			argsArray.push("x");
-			argsArray.push("y");
-
 			const equation = element.def[eindex];
 			// create function that is used to calculate the values
-			element.def[eindex] = new Function(argsArray.toString(), "return " + equation + ";").bind(args, ...mathFunctions, createdElements);
+			element.def[eindex] = new Function(...argsArray, "createdElements", "x", "y", "return " + equation + ";").bind(args, ...mathFunctions, createdElements);
 		}
 		else { // no composed elements
 			const equation = element.def[eindex];
 
-			argsArray.push("x");
-			argsArray.push("y");
-
-			element.def[eindex] = new Function(argsArray.toString(), "return " + equation + ";").bind(args, ...mathFunctions);
+			element.def[eindex] = new Function(...argsArray, "x", "y", "return " + equation + ";").bind(args, ...mathFunctions);
 		}
 	}
 }
