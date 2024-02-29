@@ -2,6 +2,17 @@ import { Board, JSXGraph, GeometryElement } from "jsxgraph";
 import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo } from "./types";
 
+const args = {};
+const argsArray = Object.getOwnPropertyNames(Math) ;
+const mathFunctions: any[] = [];
+
+export function setMathFunctions() {
+	for (const name of Object.getOwnPropertyNames(Math)) {
+		//@ts-ignore
+		mathFunctions.push(Math[name]);
+	}
+}
+
 export function parseCodeBlock(source: string) :GraphInfo {
 	let graph: GraphInfo = {bounds: [], keepAspectRatio: false, showNavigation: true, axis: true,  elements: []};
 
@@ -198,15 +209,21 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 				composed = re.exec(element.def[eindex]);
 			}
 
-			const args = {}
+			argsArray.push("createdElements");
+			argsArray.push("x");
+			argsArray.push("y");
 
 			const equation = element.def[eindex];
 			// create function that is used to calculate the values
-			element.def[eindex] = new Function("createdElements", "x", "y", "return " + equation + ";").bind(args, createdElements);
+			element.def[eindex] = new Function(argsArray.toString(), "return " + equation + ";").bind(args, ...mathFunctions, createdElements);
 		}
 		else { // no composed elements
 			const equation = element.def[eindex];
-			element.def[eindex] = new Function("x", "y", "return " + equation + ";");
+
+			argsArray.push("x");
+			argsArray.push("y");
+
+			element.def[eindex] = new Function(argsArray.toString(), "return " + equation + ";").bind(args, ...mathFunctions);
 		}
 	}
 }

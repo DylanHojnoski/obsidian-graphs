@@ -2,7 +2,7 @@ import { Board, GeometryElement, JSXGraph } from 'jsxgraph';
 import { Plugin } from 'obsidian';
 import { renderError } from 'src/error';
 import { GraphInfo } from 'src/types';
-import { addElement, createBoard, parseCodeBlock } from 'src/utils';
+import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
 
 export default class ObsidianGraphs extends Plugin {
@@ -10,6 +10,7 @@ export default class ObsidianGraphs extends Plugin {
 	graphDivs: HTMLElement[] = [];
 
 	async onload () {
+		setMathFunctions();
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
