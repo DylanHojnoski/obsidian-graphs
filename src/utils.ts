@@ -84,7 +84,6 @@ function validateBounds(bounds: number[]) {
 
 export function addElement(board: Board, element: ElementInfo, createdElements: GeometryElement[]) {
 	validateElement(element, createdElements);
-	validateDef(element, createdElements);
 
 	if (element.att == undefined) {
 		createdElements.push(board.create(element.type, element.def));
@@ -104,6 +103,9 @@ function validateElement(element: ElementInfo, createdElements: GeometryElement[
 	if (element.def == undefined) {
 		throw new SyntaxError("Element " + createdElements.length + " def is not defined");
 	}
+
+	validateDef(element, createdElements);
+	validateAtt(element, createdElements);
 }
 
 function validateDef(element:  ElementInfo, createdElements: GeometryElement[]) {
@@ -124,20 +126,24 @@ function checkForComposedElements(element: ElementInfo, eindex: number,  created
 
 		// checks if it is a valid element
 		if (index >= createdElements.length) {
-			throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+			throw new SyntaxError("Element " + eindex + " has invalid composed elements in def.");
 		}
 		else {
 			element.def[eindex] = createdElements[index];
 		}
 	}
+}
 
+function validateAtt(element: ElementInfo, createdElements: GeometryElement[]) {
+	const re  = new RegExp("^e[0-9]+$");
+	// check attributes for elements
 	if (element.att != undefined) {
 		if (typeof element.att.anchor === 'string' && re.test(element.att.anchor)) {
 			const index = Number.parseInt(element.att.anchor.substring(1,element.att.anchor.length));
 
 			// checks if it is a valid element
 			if (index >= createdElements.length) {
-				throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+				throw new SyntaxError("Element " + element.type + " has invalid composed elements in att.");
 			}
 			else {
 				element.att.anchor = createdElements[index];
@@ -157,7 +163,6 @@ function checkForComposedElements(element: ElementInfo, eindex: number,  created
 		if (typeof element.att.highlightStrokeColor === 'string') {
 			element.att.highlightStrokeColor = changeColorValue(element.att.highlightStrokeColor);
 		}
-
 	}
 }
 
@@ -202,21 +207,16 @@ function checkForFunction(element: ElementInfo, eindex: number, createdElements:
 				// go through composed elements and and validate and replace with proper string
 				const index = Number.parseInt(composed[0].replace("e", ""));
 				if (index < 0 || index >= createdElements.length) {
-					throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+					throw new SyntaxError("Element " + eindex + " has invalid composed elements in function.");
 				}
 
 				element.def[eindex] = element.def[eindex].replace(re, "createdElements["+index+"].Value()");
 				composed = re.exec(element.def[eindex]);
 			}
 
-			const equation = element.def[eindex];
-			// create function that is used to calculate the values
-			element.def[eindex] = new Function(...argsArray, "createdElements", "x", "y", "return " + equation + ";").bind(args, ...mathFunctions, createdElements);
 		}
-		else { // no composed elements
-			const equation = element.def[eindex];
-
-			element.def[eindex] = new Function(...argsArray, "x", "y", "return " + equation + ";").bind(args, ...mathFunctions);
-		}
+		const equation = element.def[eindex];
+		// create function that is used to calculate the values
+		element.def[eindex] = new Function(...argsArray, "createdElements", "x", "y", "return " + equation + ";").bind(args, ...mathFunctions, createdElements);
 	}
 }
