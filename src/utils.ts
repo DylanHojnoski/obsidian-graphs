@@ -2,6 +2,17 @@ import { Board, JSXGraph, GeometryElement } from "jsxgraph";
 import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo } from "./types";
 
+const args = {};
+const argsArray = Object.getOwnPropertyNames(Math) ;
+const mathFunctions: any[] = [];
+
+export function setMathFunctions() {
+	for (const name of Object.getOwnPropertyNames(Math)) {
+		//@ts-ignore
+		mathFunctions.push(Math[name]);
+	}
+}
+
 export function parseCodeBlock(source: string) :GraphInfo {
 	let graph: GraphInfo = {bounds: [], keepAspectRatio: false, showNavigation: true, axis: true,  elements: []};
 
@@ -73,7 +84,6 @@ function validateBounds(bounds: number[]) {
 
 export function addElement(board: Board, element: ElementInfo, createdElements: GeometryElement[]) {
 	validateElement(element, createdElements);
-	validateDef(element, createdElements);
 
 	if (element.att == undefined) {
 		createdElements.push(board.create(element.type, element.def));
@@ -93,40 +103,49 @@ function validateElement(element: ElementInfo, createdElements: GeometryElement[
 	if (element.def == undefined) {
 		throw new SyntaxError("Element " + createdElements.length + " def is not defined");
 	}
+
+	validateDef(element, createdElements);
+	validateAtt(element, createdElements);
 }
 
 function validateDef(element:  ElementInfo, createdElements: GeometryElement[]) {
 	for (let i = 0; i < element.def.length; i++) {
-		checkForComposedElements(element, i, createdElements);
-		checkForFunction(element, i, createdElements);
+		element.def[i] = checkComposedElements(element.def[i], createdElements);
+		element.def[i] = checkFunction(element.def[i], createdElements);
 	}
 }
 
-function checkForComposedElements(element: ElementInfo, eindex: number,  createdElements: GeometryElement[]) {
-	// regex to check if there is a composed element
+function checkComposedElements(item: any, createdElements: GeometryElement[]): any {
 	const re  = new RegExp("^e[0-9]+$");
-	const def = element.def[eindex];
-	
 	// if it is a string and passes the regex test add the element to def
-	if (typeof def === 'string' && re.test(def)) {
-		const index = Number.parseInt(def.substring(1,def.length));
+	if (typeof item === 'string' && re.test(item)) {
+		const index = Number.parseInt(item.substring(1,item.length));
 
 		// checks if it is a valid element
 		if (index >= createdElements.length) {
-			throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+			throw new SyntaxError("Element has invalid composed elements in def.");
 		}
-		else {
-			element.def[eindex] = createdElements[index];
+
+		return createdElements[index];
+	}
+	else if (Array.isArray(item)) {
+		for (let i = 0; i < item.length; i++) {
+			item[i] = checkComposedElements(item[i], createdElements);
 		}
 	}
+	return item;
+}
 
+function validateAtt(element: ElementInfo, createdElements: GeometryElement[]) {
+	const re  = new RegExp("^e[0-9]+$");
+	// check attributes for elements
 	if (element.att != undefined) {
 		if (typeof element.att.anchor === 'string' && re.test(element.att.anchor)) {
 			const index = Number.parseInt(element.att.anchor.substring(1,element.att.anchor.length));
 
 			// checks if it is a valid element
 			if (index >= createdElements.length) {
-				throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+				throw new SyntaxError("Element " + element.type + " has invalid composed elements in att.");
 			}
 			else {
 				element.att.anchor = createdElements[index];
@@ -146,7 +165,6 @@ function checkForComposedElements(element: ElementInfo, eindex: number,  created
 		if (typeof element.att.highlightStrokeColor === 'string') {
 			element.att.highlightStrokeColor = changeColorValue(element.att.highlightStrokeColor);
 		}
-
 	}
 }
 
@@ -173,40 +191,40 @@ function changeColorValue(value: string): string {
 	}
 }
 
-function checkForFunction(element: ElementInfo, eindex: number, createdElements: GeometryElement[]) {
+function checkFunction(item: any, createdElements: GeometryElement[]): any {
 	// regex to check if it is the start of a function
 	const f = RegExp("f:")
 
 	// if the def is a string and passes regex crreate the function
-	if (typeof element.def[eindex] === 'string' && f.test(element.def[eindex])) {
+	if (typeof item === 'string' && f.test(item)) {
 		// regex to check if function contains an element
 		const re = RegExp(/e[0-9]+/);
-		element.def[eindex] = element.def[eindex].replace("f:", "")
+		item = item.replace("f:", "")
 
 		// function uses composed elements
-		if (typeof element.def[eindex] === 'string' && re.test(element.def[eindex])) {
+		if (typeof item === 'string' && re.test(item)) {
 			// get the composed elements
-			let composed = re.exec(element.def[eindex]);
+			let composed = re.exec(item);
 			while (composed != null) {
 				// go through composed elements and and validate and replace with proper string
 				const index = Number.parseInt(composed[0].replace("e", ""));
 				if (index < 0 || index >= createdElements.length) {
-					throw new SyntaxError("Element " + eindex + " has invalid composed elements.");
+					throw new SyntaxError("Element has invalid composed elements in function.");
 				}
 
-				element.def[eindex] = element.def[eindex].replace(re, "createdElements["+index+"].Value()");
-				composed = re.exec(element.def[eindex]);
+				item = item.replace(re, "createdElements["+index+"].Value()");
+				composed = re.exec(item);
 			}
 
-			const args = {}
-
-			const equation = element.def[eindex];
-			// create function that is used to calculate the values
-			element.def[eindex] = new Function("createdElements", "x", "y", "return " + equation + ";").bind(args, createdElements);
 		}
-		else { // no composed elements
-			const equation = element.def[eindex];
-			element.def[eindex] = new Function("x", "y", "return " + equation + ";");
+		const equation = item;
+		// create function that is used to calculate the values
+		return  new Function(...argsArray, "createdElements", "x", "y", "return " + equation + ";").bind(args, ...mathFunctions, createdElements);
+	}
+	else if (Array.isArray(item)) {
+		for (let i = 0; i < item.length; i++) {
+			item[i] = checkFunction(item[i], createdElements);
 		}
 	}
+	return item;
 }
