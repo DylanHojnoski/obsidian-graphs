@@ -4,8 +4,6 @@ const interactiveAccent = "var(--interactive-accent)",
 	textNormal = "var(--text-normal)",
 	textMuted = "var(--text-muted)";
 
-
-
 // @ts-ignore
 JXG.themes['obsidian'] = {
 
@@ -250,21 +248,27 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: textMuted,
 		baseline: {
 			strokeColor: textNormal,
-			highlightStrokeColor:textMuted 
+			fillColor: textNormal,
+			highlightStrokeColor:textMuted,
+			highlightFillColor: textMuted,
 		},
 		label: {
 			strokeColor: textNormal,
 			fillColor: textNormal,
-			highlightStrokeColor: textMuted
+			highlightStrokeColor: textMuted,
+			highlightFillColor: textMuted,
 		},
 		highline: {
 			strokeColor: textNormal,
 			fillColor: textNormal,
-			highlightStrokeColor: interactiveAccentHover
+			highlightStrokeColor: textMuted ,
+			highlightFillColor: textMuted,
 		},
 		ticks: {
 			strokeColor: textNormal,
 			fillColor: textNormal,
+			highlightStrokeColor: textMuted ,
+			highlightFillColor: textMuted,
 		}
 	},
 
@@ -324,9 +328,12 @@ JXG.themes['obsidian'] = {
 
 	vectorfield: {
 		highlightStrokeColor: interactiveAccentHover,
-		highlightStrokeOpacity: 0.8
+	},
+
+	slopetriangle: {
+		fillColor: interactiveAccent,
+		highlightFillColor: interactiveAccentHover,
 	}
-	// });
 };
 
 export default JXG;
