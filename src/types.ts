@@ -60,8 +60,11 @@ export enum Types {
 	Sector = "sector",
 	Semicircle = "Semicircle",
 	Slider = "slider",
+	SlopeField = "slopefield",
+	SlopeTriangle = "slopetriangle",
 	Stepfunction = "stepfunction",
 	Tangent = "tangent",
 	Tapemeasure = "tapemeasure",
 	Text = "text",
+	VectorField = "vectorfield",
 }
