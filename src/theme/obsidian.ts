@@ -189,7 +189,8 @@ JXG.themes['obsidian'] = {
 		fillColor: interactiveAccent,
 		strokeColor: textNormal,
 		highlightFillColor: interactiveAccentHover,
-		highlightStrokeColor: textMuted 
+		highlightStrokeColor: textMuted,
+		showInfobox: true,
 	},
 
 	polygon: {
