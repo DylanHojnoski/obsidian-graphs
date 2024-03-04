@@ -63,6 +63,7 @@ export enum Types {
 	RegularPolygon = "regularpolygon",
 	Riemannsum = "riemannsum",
 	Sector = "sector",
+	Segment = "segment",
 	Semicircle = "Semicircle",
 	Slider = "slider",
 	SlopeField = "slopefield",

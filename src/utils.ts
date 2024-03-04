@@ -215,7 +215,6 @@ function checkFunction(item: any, createdElements: JSXElement[]): any {
 				}
 
 				if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
-				console.log(createdElements[index].name)
 					item = item.replace(re, "createdElements["+index+"].element.Value()");
 				}
 				else {
