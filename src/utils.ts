@@ -1,6 +1,6 @@
 import { Board, JSXGraph, GeometryElement } from "jsxgraph";
 import { parseYaml } from "obsidian";
-import { ElementInfo, GraphInfo } from "./types";
+import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
 
 const args = {};
 const argsArray = Object.getOwnPropertyNames(Math) ;
@@ -82,18 +82,20 @@ function validateBounds(bounds: number[]) {
 	}
 }
 
-export function addElement(board: Board, element: ElementInfo, createdElements: GeometryElement[]) {
+export function addElement(board: Board, element: ElementInfo, createdElements: JSXElement[]) {
 	validateElement(element, createdElements);
 
 	if (element.att == undefined) {
-		createdElements.push(board.create(element.type, element.def));
+		const createdElement: GeometryElement = board.create(element.type, element.def);
+		createdElements.push({name: element.type, element: createdElement});
 	}
 	else {
-		createdElements.push(board.create(element.type, element.def, element.att));
+		const createdElement: GeometryElement = board.create(element.type, element.def, element.att);
+		createdElements.push({name: element.type, element: createdElement});
 	}
 }
 
-function validateElement(element: ElementInfo, createdElements: GeometryElement[]) {
+function validateElement(element: ElementInfo, createdElements: JSXElement[]) {
 	if (element.type == undefined &&  element.def == undefined) {
 		throw new SyntaxError("Element " + createdElements.length + " type and def is not defined");
 	}
@@ -108,14 +110,14 @@ function validateElement(element: ElementInfo, createdElements: GeometryElement[
 	validateAtt(element, createdElements);
 }
 
-function validateDef(element:  ElementInfo, createdElements: GeometryElement[]) {
+function validateDef(element:  ElementInfo, createdElements: JSXElement[]) {
 	for (let i = 0; i < element.def.length; i++) {
 		element.def[i] = checkComposedElements(element.def[i], createdElements);
 		element.def[i] = checkFunction(element.def[i], createdElements);
 	}
 }
 
-function checkComposedElements(item: any, createdElements: GeometryElement[]): any {
+function checkComposedElements(item: any, createdElements: JSXElement[]): any {
 	const re  = new RegExp("^e[0-9]+$");
 	// if it is a string and passes the regex test add the element to def
 	if (typeof item === 'string' && re.test(item)) {
@@ -126,7 +128,7 @@ function checkComposedElements(item: any, createdElements: GeometryElement[]): a
 			throw new SyntaxError("Element has invalid composed elements in def.");
 		}
 
-		return createdElements[index];
+		return createdElements[index].element;
 	}
 	else if (Array.isArray(item)) {
 		for (let i = 0; i < item.length; i++) {
@@ -136,7 +138,7 @@ function checkComposedElements(item: any, createdElements: GeometryElement[]): a
 	return item;
 }
 
-function validateAtt(element: ElementInfo, createdElements: GeometryElement[]) {
+function validateAtt(element: ElementInfo, createdElements: JSXElement[]) {
 	const re  = new RegExp("^e[0-9]+$");
 	// check attributes for elements
 	if (element.att != undefined) {
@@ -148,7 +150,7 @@ function validateAtt(element: ElementInfo, createdElements: GeometryElement[]) {
 				throw new SyntaxError("Element " + element.type + " has invalid composed elements in att.");
 			}
 			else {
-				element.att.anchor = createdElements[index];
+				element.att.anchor = createdElements[index].element;
 			}
 		}
 		if (typeof element.att.fillColor === 'string') {
@@ -191,7 +193,7 @@ function changeColorValue(value: string): string {
 	}
 }
 
-function checkFunction(item: any, createdElements: GeometryElement[]): any {
+function checkFunction(item: any, createdElements: JSXElement[]): any {
 	// regex to check if it is the start of a function
 	const f = RegExp("f:")
 
@@ -212,7 +214,15 @@ function checkFunction(item: any, createdElements: GeometryElement[]): any {
 					throw new SyntaxError("Element has invalid composed elements in function.");
 				}
 
-				item = item.replace(re, "createdElements["+index+"].Value()");
+				if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
+				console.log(createdElements[index].name)
+					item = item.replace(re, "createdElements["+index+"].element.Value()");
+				}
+				else {
+					item = item.replace(re, "createdElements["+index+"].element");
+				}
+
+
 				composed = re.exec(item);
 			}
 

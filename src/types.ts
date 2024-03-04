@@ -1,5 +1,10 @@
 import { GeometryElement } from "jsxgraph";
 
+export interface JSXElement {
+	name: string,
+	element: GeometryElement
+}
+
 export interface GraphInfo {
 	bounds: number[],
 	keepAspectRatio: boolean,
