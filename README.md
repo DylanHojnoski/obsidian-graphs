@@ -4,6 +4,14 @@ Plugin of [Obsidian](https://obsidian.md/) that creates interactive graphs from 
 
 This file only covers the basics of how to use this plugin for more information go to [Graphs Wiki](https://github.com/DylanHojnoski/obsidian-graphs/wiki).
 
+## Installation
+
+Can be found in the community plugin browser in Obsidian.
+* make sure to turn off restricted mode
+* you can paste this link into your browser and it will bring you to the page
+	* `obsidian://show-plugin?id=graphs`
+ *  click install
+
 ## How to use 
 
 To create a graph create a code block with the language set to graph.
