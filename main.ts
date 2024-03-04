@@ -1,7 +1,7 @@
 import { Board, GeometryElement, JSXGraph } from 'jsxgraph';
 import { Plugin } from 'obsidian';
 import { renderError } from 'src/error';
-import { GraphInfo } from 'src/types';
+import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
 
@@ -42,7 +42,7 @@ export default class ObsidianGraphs extends Plugin {
 
 				this.boards.push(board);
 
-				const createdElements: GeometryElement[] = [];
+				const createdElements: JSXElement[] = [];
 
 				if (graphInfo.elements != undefined) {
 					// add every element to the graph 

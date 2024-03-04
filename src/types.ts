@@ -1,5 +1,10 @@
 import { GeometryElement } from "jsxgraph";
 
+export interface JSXElement {
+	name: string,
+	element: GeometryElement
+}
+
 export interface GraphInfo {
 	bounds: number[],
 	keepAspectRatio: boolean,
@@ -58,6 +63,7 @@ export enum Types {
 	RegularPolygon = "regularpolygon",
 	Riemannsum = "riemannsum",
 	Sector = "sector",
+	Segment = "segment",
 	Semicircle = "Semicircle",
 	Slider = "slider",
 	SlopeField = "slopefield",
