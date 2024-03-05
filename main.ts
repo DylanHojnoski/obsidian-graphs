@@ -1,19 +1,46 @@
-import { Board, GeometryElement, JSXGraph } from 'jsxgraph';
+import { Board, JSXGraph } from 'jsxgraph';
 import { Plugin } from 'obsidian';
 import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
 
+
 export default class ObsidianGraphs extends Plugin {
 	boards: Board[] = [];
 	graphDivs: HTMLElement[] = [];
+	activeFileNames: string[];
+	currentFileName: string;
 
 	async onload () {
+
 		setMathFunctions();
+
+		this.app.workspace.on("file-open" , () => {
+				this.activeFileNames = [];
+				const files = this.app.workspace.getLeavesOfType("markdown");
+				files.forEach((file) => this.activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
+
+				for (let i = 0; i < this.boards.length; i++) {
+					let active = false;
+					for (const name of this.activeFileNames) {
+						if (this.boards[i].containerObj.hasClass(name)) {
+							active = true;
+							break;	
+						}
+					}
+					if (!active) {
+						JSXGraph.freeBoard(this.boards[i]);
+						this.boards.remove(this.boards[i]);
+						this.graphDivs[i].remove();
+						this.graphDivs.remove(this.graphDivs[i]);
+					}
+				}
+		})
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
+				const fileName = this.app.workspace.getActiveFile();
 				let graphInfo: GraphInfo;
 
 				try {
@@ -29,8 +56,13 @@ export default class ObsidianGraphs extends Plugin {
 				// create the div that contains the board
 				const graphDiv = element.createEl("div", {cls: "jxgbox"});
 				graphDiv.id = "box";
+				if (fileName) {
+					this.currentFileName = fileName.name;
+					this.currentFileName = this.currentFileName.substring(0, fileName.name.indexOf("."));
+					this.currentFileName = this.currentFileName.replace(/\s/g, "");
+					graphDiv.addClass(this.currentFileName);
+				}
 				this.graphDivs.push(graphDiv);
-
 
 				try {
 					// create the board
