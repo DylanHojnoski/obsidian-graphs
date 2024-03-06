@@ -35,6 +35,9 @@ export default class ObsidianGraphs extends Plugin {
 						this.graphDivs[i].remove();
 						this.graphDivs.remove(this.graphDivs[i]);
 					}
+					else {
+						break;
+					}
 				}
 		})
 
