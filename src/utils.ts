@@ -1,5 +1,5 @@
 import { Board, JSXGraph, GeometryElement } from "jsxgraph";
-import { parseYaml } from "obsidian";
+import { finishRenderMath, parseYaml, renderMath } from "obsidian";
 import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
 
 const args = {};
@@ -115,7 +115,19 @@ function validateDef(element:  ElementInfo, createdElements: JSXElement[]) {
 		element.def[i] = checkComposedElements(element.def[i], createdElements);
 		element.def[i] = checkFunction(element.def[i], createdElements);
 	}
-}
+
+	if (element.type == Types.Text && element.def.length >= 3 && typeof  element.def[2] === 'string' && element.att != undefined && element.att.useMathJax) {
+		const withoutDollarSigns = /(?<!\\)\$(.*?)(?<!\\)\$/gm;
+		const matches = [...element.def[2].matchAll(withoutDollarSigns)];
+
+		console.log(matches);
+		for (let i = 0; i < matches.length; i++) {
+			console.log("Match " +matches[i][0]);
+			element.def[2] = element.def[2].replace(matches[i][0], renderMath(matches[i][1], true).outerHTML);
+		}
+		finishRenderMath();
+	}
+} 
 
 function checkComposedElements(item: any, createdElements: JSXElement[]): any {
 	const re  = new RegExp("^e[0-9]+$");

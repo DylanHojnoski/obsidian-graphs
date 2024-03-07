@@ -1,5 +1,5 @@
-import { Board, GeometryElement, JSXGraph } from 'jsxgraph';
-import { Plugin } from 'obsidian';
+import { Board, JSXGraph } from 'jsxgraph';
+import { loadMathJax, Plugin } from 'obsidian';
 import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
@@ -11,6 +11,12 @@ export default class ObsidianGraphs extends Plugin {
 
 	async onload () {
 		setMathFunctions();
+
+		JXG.Options.text.parse = false;
+		JXG.Options.text.useMathJax = true;
+		JXG.Options.text.display = "html";
+
+		await loadMathJax();
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
@@ -29,8 +35,8 @@ export default class ObsidianGraphs extends Plugin {
 				// create the div that contains the board
 				const graphDiv = element.createEl("div", {cls: "jxgbox"});
 				graphDiv.id = "box";
+				graphDiv.addClass("math");
 				this.graphDivs.push(graphDiv);
-
 
 				try {
 					// create the board

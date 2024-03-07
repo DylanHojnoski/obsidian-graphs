@@ -30,6 +30,7 @@ export type  Attributes = {
 	highlightStrokeColor: string,
 	fillOpacity: number,
 	anchor: string | GeometryElement,
+	useMathJax: boolean,
 }
 
 export enum Types {
