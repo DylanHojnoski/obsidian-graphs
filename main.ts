@@ -1,4 +1,4 @@
-import { Board, JSXGraph } from 'jsxgraph';
+import { Board, boards, JSXGraph } from 'jsxgraph';
 import { Plugin } from 'obsidian';
 import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
@@ -7,9 +7,6 @@ import "./src/theme/obsidian.ts"
 
 
 export default class ObsidianGraphs extends Plugin {
-	boards: Board[] = [];
-	graphDivs: HTMLElement[] = [];
-	activeFileNames: string[];
 	currentFileName: string;
 
 	async onload () {
@@ -17,33 +14,38 @@ export default class ObsidianGraphs extends Plugin {
 		setMathFunctions();
 
 		this.app.workspace.on("file-open" , () => {
-				this.activeFileNames = [];
-				const files = this.app.workspace.getLeavesOfType("markdown");
-				files.forEach((file) => this.activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
 
-				for (let i = 0; i < this.boards.length; i++) {
+				const currentFile = this.app.workspace.getActiveFile();
+				if (currentFile) {
+					this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
+					this.currentFileName = this.currentFileName.replace(/\s/g, "");
+				}
+
+				const activeFileNames: string[] = [];
+				const files = this.app.workspace.getLeavesOfType("markdown");
+				files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
+
+				for (const key in boards) {
 					let active = false;
-					for (const name of this.activeFileNames) {
-						if (this.boards[i].containerObj.hasClass(name)) {
+					const div = boards[key].containerObj;
+					
+					for (const name of activeFileNames) {
+						if (div.hasClass(name)) {
 							active = true;
-							break;	
+							break;
 						}
 					}
+
 					if (!active) {
-						JSXGraph.freeBoard(this.boards[i]);
-						this.boards.remove(this.boards[i]);
-						this.graphDivs[i].remove();
-						this.graphDivs.remove(this.graphDivs[i]);
-					}
-					else {
-						break;
+						console.log("free");
+						JSXGraph.freeBoard(boards[key]);
+						div.remove();
 					}
 				}
 		})
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
-				const fileName = this.app.workspace.getActiveFile();
 				let graphInfo: GraphInfo;
 
 				try {
@@ -57,15 +59,9 @@ export default class ObsidianGraphs extends Plugin {
 				let board: Board;
 
 				// create the div that contains the board
-				const graphDiv = element.createEl("div", {cls: "jxgbox"});
+				const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
 				graphDiv.id = "box";
-				if (fileName) {
-					this.currentFileName = fileName.name;
-					this.currentFileName = this.currentFileName.substring(0, fileName.name.indexOf("."));
-					this.currentFileName = this.currentFileName.replace(/\s/g, "");
-					graphDiv.addClass(this.currentFileName);
-				}
-				this.graphDivs.push(graphDiv);
+
 
 				try {
 					// create the board
@@ -74,8 +70,6 @@ export default class ObsidianGraphs extends Plugin {
 					renderError(e,element);
 					return;
 				}
-
-				this.boards.push(board);
 
 				const createdElements: JSXElement[] = [];
 
@@ -97,11 +91,10 @@ export default class ObsidianGraphs extends Plugin {
 	}
 
 	onunload() {
-		for (const board of this.boards) {
-			JSXGraph.freeBoard(board);
-		}
+		for (const key in boards) {
+			const div = boards[key].containerObj;
 
-		for (const div of this.graphDivs) {
+			JSXGraph.freeBoard(boards[key]);
 			div.remove();
 		}
 	}
