@@ -25,8 +25,10 @@ export default class ObsidianGraphs extends Plugin {
 				const files = this.app.workspace.getLeavesOfType("markdown");
 				files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
 
+				//@ts-ignore
 				for (const key in boards) {
 					let active = false;
+					//@ts-ignore
 					const div = boards[key].containerObj;
 					
 					for (const name of activeFileNames) {
@@ -38,6 +40,7 @@ export default class ObsidianGraphs extends Plugin {
 
 					if (!active) {
 						console.log("free");
+						//@ts-ignore
 						JSXGraph.freeBoard(boards[key]);
 						div.remove();
 					}
@@ -91,9 +94,12 @@ export default class ObsidianGraphs extends Plugin {
 	}
 
 	onunload() {
+		//@ts-ignore
 		for (const key in boards) {
+			//@ts-ignore
 			const div = boards[key].containerObj;
 
+			//@ts-ignore
 			JSXGraph.freeBoard(boards[key]);
 			div.remove();
 		}
