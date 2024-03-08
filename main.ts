@@ -5,9 +5,9 @@ import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
 
-
 export default class ObsidianGraphs extends Plugin {
 	currentFileName: string;
+	count = 0;
 
 	async onload () {
 
@@ -67,8 +67,8 @@ export default class ObsidianGraphs extends Plugin {
 
 				// create the div that contains the board
 				const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
-				graphDiv.id = "box";
-
+				graphDiv.id = "graph" + this.count;
+				this.count++;
 
 				try {
 					// create the board
