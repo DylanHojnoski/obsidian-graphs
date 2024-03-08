@@ -9,7 +9,9 @@ JXG.themes['obsidian'] = {
 
 	board: {
 		showInfobox: false,
-		showCopyright: true,
+		showCopyright: false,
+		browserPan: true,
+		pan: {needTwoFingers: true},
 	},
 
 	navbar: {
