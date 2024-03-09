@@ -8,21 +8,19 @@ const interactiveAccent = "var(--interactive-accent)",
 JXG.themes['obsidian'] = {
 
 	board: {
-		showInfobox: false,
-		showCopyright: true,
+		showInfobox: true,
+		showCopyright: false,
+		browserPan: true,
+		pan: {needTwoFingers: true},
 	},
 
 	navbar: {
 		strokeColor: textMuted,
-		fillColor: 'none'
 	},
 
 	elements: {
 		strokeColor: interactiveAccent,
 		highlightStrokeColor: interactiveAccentHover,
-		fillColor: 'none',
-		highlightFillColor: 'none',
-		highlightStrokeOpacity: 1
 	},
 
 	ellipse: {
@@ -34,7 +32,7 @@ JXG.themes['obsidian'] = {
 	angle: {
 		strokeColor: interactiveAccent,
 		fillColor: interactiveAccent,
-		highlightFillColor: '#aaaaaa33',
+		highlightFillColor: interactiveAccentHover,
 		label: {
 			strokeColor: textNormal 
 		}
@@ -85,7 +83,7 @@ JXG.themes['obsidian'] = {
 
 	circumcircle: {
 		strokeColor: interactiveAccent,
-		highlightFillColor: 'none',
+		highlightFillColor: interactiveAccentHover,
 		highlightStrokeColor: interactiveAccentHover,
 		center: {
 			fillColor: interactiveAccent,
