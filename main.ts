@@ -44,7 +44,6 @@ export default class ObsidianGraphs extends Plugin {
 
 					// it is not in active files so delete
 					if (!active) {
-						console.log("free");
 						//@ts-ignore
 						JSXGraph.freeBoard(boards[key]);
 						div.remove();
@@ -78,7 +77,6 @@ export default class ObsidianGraphs extends Plugin {
 				// create the div that contains the board
 				const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
 				graphDiv.id = "graph" + this.count;
-				console.log("File " + this.currentFileName);
 				this.count++;
 
 				try {
