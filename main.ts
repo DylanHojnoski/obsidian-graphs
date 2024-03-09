@@ -1,15 +1,17 @@
-import { Board, JSXGraph } from 'jsxgraph';
 import { loadMathJax, Plugin } from 'obsidian';
+import { Board, boards, JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
 
 export default class ObsidianGraphs extends Plugin {
-	boards: Board[] = [];
-	graphDivs: HTMLElement[] = [];
+	currentFileName: string;
+	count = 0;
+
 
 	async onload () {
+
 		setMathFunctions();
 
 		JXG.Options.text.parse = false;
@@ -17,6 +19,39 @@ export default class ObsidianGraphs extends Plugin {
 		JXG.Options.text.display = "html";
 
 		await loadMathJax();
+
+		this.app.workspace.on("file-open" , () => {
+
+				setCurrentFileName();
+
+				// get the active files
+				const activeFileNames: string[] = [];
+				const files = this.app.workspace.getLeavesOfType("markdown");
+				files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
+
+				// go through all the boards and delete ones that are not in active files
+				//@ts-ignore
+				for (const key in boards) {
+					let active = false;
+					//@ts-ignore
+					const div = boards[key].containerObj;
+					
+					// check the if it is in the active files
+					for (const name of activeFileNames) {
+						if (div.hasClass(name)) {
+							active = true;
+							break;
+						}
+					}
+
+					// it is not in active files so delete
+					if (!active) {
+						//@ts-ignore
+						JSXGraph.freeBoard(boards[key]);
+						div.remove();
+					}
+				}
+		})
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
@@ -32,11 +67,15 @@ export default class ObsidianGraphs extends Plugin {
 
 				let board: Board;
 
+				// if the current file name is undefined need to get the current file
+				if (this.currentFileName == undefined) {
+					setCurrentFileName();
+				}
+
 				// create the div that contains the board
-				const graphDiv = element.createEl("div", {cls: "jxgbox"});
-				graphDiv.id = "box";
-				graphDiv.addClass("math");
-				this.graphDivs.push(graphDiv);
+				const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
+				graphDiv.id = "graph" + this.count;
+				this.count++;
 
 				try {
 					// create the board
@@ -45,8 +84,6 @@ export default class ObsidianGraphs extends Plugin {
 					renderError(e,element);
 					return;
 				}
-
-				this.boards.push(board);
 
 				const createdElements: JSXElement[] = [];
 
@@ -68,13 +105,23 @@ export default class ObsidianGraphs extends Plugin {
 	}
 
 	onunload() {
-		for (const board of this.boards) {
-			JSXGraph.freeBoard(board);
-		}
+		//@ts-ignore
+		for (const key in boards) {
+			//@ts-ignore
+			const div = boards[key].containerObj;
 
-		for (const div of this.graphDivs) {
+			//@ts-ignore
+			JSXGraph.freeBoard(boards[key]);
 			div.remove();
 		}
 	}
 
+ }
+
+ function setCurrentFileName() {
+	const currentFile = this.app.workspace.getActiveFile();
+	if (currentFile) {
+		this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
+		this.currentFileName = this.currentFileName.replace(/\s/g, "");
+	}
  }

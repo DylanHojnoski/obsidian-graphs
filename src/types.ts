@@ -6,10 +6,23 @@ export interface JSXElement {
 }
 
 export interface GraphInfo {
-	bounds: number[],
+	bounds: [
+		x1: number,
+		y1: number,
+		x2: number,
+		y2: number
+	],
+	maxBoundingBox: [
+		x1: number | null,
+		y1: number | null,
+		x2: number | null,
+		y2: number | null
+	] | undefined,
 	keepAspectRatio: boolean,
 	showNavigation: boolean,
 	axis: boolean,
+	defaultAxes: any,
+	drag: boolean,
 	elements: ElementInfo[],
 }
 
@@ -31,6 +44,11 @@ export type  Attributes = {
 	fillOpacity: number,
 	anchor: string | GeometryElement,
 	useMathJax: boolean,
+}
+
+export type Axis = {
+	x: any,
+	y: any,
 }
 
 export enum Types {

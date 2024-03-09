@@ -14,7 +14,13 @@ export function setMathFunctions() {
 }
 
 export function parseCodeBlock(source: string) :GraphInfo {
-	let graph: GraphInfo = {bounds: [], keepAspectRatio: false, showNavigation: true, axis: true,  elements: []};
+	let graph: GraphInfo = {bounds: [0,0,0,0],
+							maxBoundingBox: JXG.Options.board.maxBoundingBox,
+							keepAspectRatio: false,
+							drag: true,
+							showNavigation: true,
+							axis: true, defaultAxes: JXG.Options.board.defaultAxes,
+							elements: []};
 
 	// there is nothing inside of the codeblock
 	if (source == null || source == "") {
@@ -24,12 +30,24 @@ export function parseCodeBlock(source: string) :GraphInfo {
 	try {
 		graph = parseYaml(source);
 
+		if (graph.maxBoundingBox == undefined) {
+			graph.maxBoundingBox = JXG.Options.board.maxBoundingBox;
+		}
+
 		if (graph.showNavigation == undefined) {
 			graph.showNavigation = true;
 		}
 
 		if (graph.axis == undefined) {
 			graph.axis = true;
+		}
+
+		if (graph.defaultAxes == undefined) {
+			graph.defaultAxes = JXG.Options.board.defaultAxes;
+		}
+
+		if (graph.drag == undefined) {
+			graph.drag = true;
 		}
 
 		return graph;
@@ -47,19 +65,15 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 
 	validateBounds(graphInfo.bounds);
 
-	const xmin = graphInfo.bounds[0];
-	const xmax = graphInfo.bounds[2];
-	const ymin = graphInfo.bounds[3];
-	const ymax = graphInfo.bounds[1];
-
 	// create the board for the graph
-	const graph = JSXGraph.initBoard(graphDiv, {boundingBox: [xmin, ymax, xmax, ymin],
+	const graph = JSXGraph.initBoard(graphDiv, {boundingBox: graphInfo.bounds,
+												maxBoundingBox: graphInfo.maxBoundingBox,
+												drag: {enabled: graphInfo.drag},
 												axis: graphInfo.axis,
-												showCopyright: false,
 												showNavigation: graphInfo.showNavigation,
+												defaultAxes: graphInfo.defaultAxes,
 												//@ts-ignore
 												theme: 'obsidian',
-												pan: {needTwoFingers: true},
 												keepAspectRatio: graphInfo.keepAspectRatio});
 
 	return graph;
