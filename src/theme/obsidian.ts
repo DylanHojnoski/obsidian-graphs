@@ -291,6 +291,8 @@ JXG.themes['obsidian'] = {
 			highlightStrokeColor: textMuted 
 		},
 		ticks: {
+			strokeColor: interactiveAccent,
+			highlightStrokeColor: interactiveAccentHover,
 		}
 	},
 
