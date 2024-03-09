@@ -9,18 +9,14 @@ export default class ObsidianGraphs extends Plugin {
 	currentFileName: string;
 	count = 0;
 
+
 	async onload () {
 
 		setMathFunctions();
 
 		this.app.workspace.on("file-open" , () => {
 
-				// set the current file
-				const currentFile = this.app.workspace.getActiveFile();
-				if (currentFile) {
-					this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
-					this.currentFileName = this.currentFileName.replace(/\s/g, "");
-				}
+				setCurrentFileName();
 
 				// get the active files
 				const activeFileNames: string[] = [];
@@ -64,6 +60,11 @@ export default class ObsidianGraphs extends Plugin {
 				}
 
 				let board: Board;
+
+				// if the current file name is undefined need to get the current file
+				if (this.currentFileName == undefined) {
+					setCurrentFileName();
+				}
 
 				// create the div that contains the board
 				const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
@@ -109,4 +110,12 @@ export default class ObsidianGraphs extends Plugin {
 		}
 	}
 
+ }
+
+ function setCurrentFileName() {
+	const currentFile = this.app.workspace.getActiveFile();
+	if (currentFile) {
+		this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
+		this.currentFileName = this.currentFileName.replace(/\s/g, "");
+	}
  }
