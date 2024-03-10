@@ -17,7 +17,15 @@ export default class ObsidianGraphs extends Plugin {
 		//@ts-ignore
 		MathJax.config.tex.displayMath = [["$$", "$$"]];
 		//@ts-ignore
-		MathJax.startup.getComponents();
+		MathJax.config.tex.processEscapes = true;
+		//@ts-ignore
+		MathJax.startup.pageReady = () => {
+			return MathJax.startup.defaultPageReady().then(function () {
+				console.log("done");
+			})
+		}
+		//@ts-ignore
+		await MathJax.startup.getComponents();
 
 		setMathFunctions();
 
@@ -53,10 +61,12 @@ export default class ObsidianGraphs extends Plugin {
 				if (!active) {
 					//@ts-ignore
 					JSXGraph.freeBoard(boards[key]);
+					//@ts-ignore
+					MathJax.typesetClear(div);
 					div.remove();
 				}
 			}
-		})
+		});
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 

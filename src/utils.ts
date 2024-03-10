@@ -1,5 +1,5 @@
 import { Board, JSXGraph, GeometryElement } from "jsxgraph";
-import { finishRenderMath, parseYaml, renderMath } from "obsidian";
+import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
 
 const args = {};

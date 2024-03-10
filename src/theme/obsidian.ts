@@ -152,6 +152,8 @@ JXG.themes['obsidian'] = {
 		strokeColor: textNormal,
 		highlightStrokeColor: textMuted,
 		useMathJax: true,
+		display: "html",
+		parse: false,
 	},
 
 	line: {
@@ -304,6 +306,8 @@ JXG.themes['obsidian'] = {
 		strokeColor: textNormal,
 		highlightStrokeColor: textMuted,
 		useMathJax: true,
+		display: "html",
+		parse: false,
 	},
 
 	tracecurve: {
