@@ -49,6 +49,9 @@ JXG.themes['obsidian'] = {
 		ticks: {
 			strokeColor: textNormal,
 			highlightStrokeColor: textMuted,
+			label: {
+				useMathJax: false,
+			}
 		},
 		label: {
 			strokeColor: textNormal,
@@ -148,6 +151,9 @@ JXG.themes['obsidian'] = {
 	label: {
 		strokeColor: textNormal,
 		highlightStrokeColor: textMuted,
+		useMathJax: true,
+		display: "html",
+		parse: false,
 	},
 
 	line: {
@@ -299,6 +305,9 @@ JXG.themes['obsidian'] = {
 	text: {
 		strokeColor: textNormal,
 		highlightStrokeColor: textMuted,
+		useMathJax: true,
+		display: "html",
+		parse: false,
 	},
 
 	tracecurve: {

@@ -1,5 +1,5 @@
+import { loadMathJax, Plugin } from 'obsidian';
 import { Board, boards, JSXGraph } from 'jsxgraph';
-import { Plugin } from 'obsidian';
 import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
@@ -9,8 +9,20 @@ export default class ObsidianGraphs extends Plugin {
 	currentFileName: string;
 	count = 0;
 
-
 	async onload () {
+		await loadMathJax();
+
+		//@ts-ignore
+		if (typeof MathJax !== "undefined") {
+			//@ts-ignore
+			MathJax.config.tex.inlineMath = [["$", "$"]];
+			//@ts-ignore
+			MathJax.config.tex.processEscapes = true;
+			//@ts-ignore
+			MathJax.config.chtml.adaptiveCSS = false;
+			//@ts-ignore
+			await MathJax.startup.getComponents();
+		}
 
 		setMathFunctions();
 
@@ -45,10 +57,12 @@ export default class ObsidianGraphs extends Plugin {
 				// it is not in active files so delete
 				if (!active) {
 					//@ts-ignore
+					boards[key].containerObj.remove();
+					//@ts-ignore
 					JSXGraph.freeBoard(boards[key]);
 				}
 			}
-		})
+		});
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
 
@@ -99,10 +113,7 @@ export default class ObsidianGraphs extends Plugin {
 					}
 				}
 			}
-
-			element.replaceWith(graphDiv);
 		});
-
 	}
 
 	onunload() {
@@ -116,5 +127,4 @@ export default class ObsidianGraphs extends Plugin {
 			div.remove();
 		}
 	}
-
 }
