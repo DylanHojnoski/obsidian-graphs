@@ -129,7 +129,7 @@ function validateDef(element:  ElementInfo, createdElements: JSXElement[]) {
 		element.def[i] = checkComposedElements(element.def[i], createdElements);
 		element.def[i] = checkFunction(element.def[i], createdElements);
 	}
-} 
+}
 
 function checkComposedElements(item: any, createdElements: JSXElement[]): any {
 	const re  = new RegExp("^e[0-9]+$");

@@ -53,6 +53,8 @@ export default class ObsidianGraphs extends Plugin {
 				// it is not in active files so delete
 				if (!active) {
 					//@ts-ignore
+					boards[key].containerObj.remove();
+					//@ts-ignore
 					JSXGraph.freeBoard(boards[key]);
 				}
 			}
@@ -93,7 +95,6 @@ export default class ObsidianGraphs extends Plugin {
 				renderError(e,element);
 				return;
 			}
-			element.replaceWith(graphDiv);
 
 			const createdElements: JSXElement[] = [];
 
