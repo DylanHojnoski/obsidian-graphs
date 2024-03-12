@@ -11,14 +11,18 @@ export default class ObsidianGraphs extends Plugin {
 
 	async onload () {
 		await loadMathJax();
+
 		//@ts-ignore
-		MathJax.config.tex.inlineMath = [["$", "$"]];
-		//@ts-ignore
-		MathJax.config.tex.processEscapes = true;
-		//@ts-ignore
-		MathJax.config.chtml.adaptiveCSS = false;
-		//@ts-ignore
-		await MathJax.startup.getComponents();
+		if (typeof MathJax !== "undefined") {
+			//@ts-ignore
+			MathJax.config.tex.inlineMath = [["$", "$"]];
+			//@ts-ignore
+			MathJax.config.tex.processEscapes = true;
+			//@ts-ignore
+			MathJax.config.chtml.adaptiveCSS = false;
+			//@ts-ignore
+			await MathJax.startup.getComponents();
+		}
 
 		setMathFunctions();
 
