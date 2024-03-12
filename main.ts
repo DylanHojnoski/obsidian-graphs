@@ -54,7 +54,6 @@ export default class ObsidianGraphs extends Plugin {
 				if (!active) {
 					//@ts-ignore
 					JSXGraph.freeBoard(boards[key]);
-					div.remove();
 				}
 			}
 		});
