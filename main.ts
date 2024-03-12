@@ -9,21 +9,14 @@ export default class ObsidianGraphs extends Plugin {
 	currentFileName: string;
 	count = 0;
 
-
 	async onload () {
 		await loadMathJax();
 		//@ts-ignore
 		MathJax.config.tex.inlineMath = [["$", "$"]];
 		//@ts-ignore
-		MathJax.config.tex.displayMath = [["$$", "$$"]];
-		//@ts-ignore
 		MathJax.config.tex.processEscapes = true;
 		//@ts-ignore
-		MathJax.startup.pageReady = () => {
-			return MathJax.startup.defaultPageReady().then(function () {
-				console.log("done");
-			})
-		}
+		MathJax.config.chtml.adaptiveCSS = false;
 		//@ts-ignore
 		await MathJax.startup.getComponents();
 
@@ -61,8 +54,6 @@ export default class ObsidianGraphs extends Plugin {
 				if (!active) {
 					//@ts-ignore
 					JSXGraph.freeBoard(boards[key]);
-					//@ts-ignore
-					MathJax.typesetClear(div);
 					div.remove();
 				}
 			}
