@@ -44,10 +44,8 @@ export default class ObsidianGraphs extends Plugin {
 
 				// it is not in active files so delete
 				if (!active) {
-					console.log("free")
 					//@ts-ignore
 					JSXGraph.freeBoard(boards[key]);
-					div.remove();
 				}
 			}
 		})
@@ -75,7 +73,6 @@ export default class ObsidianGraphs extends Plugin {
 				}
 			}
 
-			console.log("File " + this.currentFileName);
 			// create the div that contains the board
 			const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
 			graphDiv.id = "graph" + this.count;
