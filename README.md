@@ -2,7 +2,11 @@
 
 Plugin of [Obsidian](https://obsidian.md/) that creates interactive graphs from YAML.
 
+A nice feature of this plugin is that the graphs use colors from you Obsidian theme so it will match the rest of your notes.
+
 This file only covers the basics of how to use this plugin for more information go to [Graphs Wiki](https://github.com/DylanHojnoski/obsidian-graphs/wiki).
+
+If you have a cool graph that helps show the capabilities of this plugin please post it in this thread [discussion](https://github.com/DylanHojnoski/obsidian-graphs/discussions/15).
 
 ## Installation
 
@@ -66,7 +70,6 @@ If you find any bugs with this plugin please create a new issue so that they can
 ##  Contributing
 
 If you want to contribute please create an issue or pull request.
-
 
 ## Attribution
 
