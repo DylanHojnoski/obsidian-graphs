@@ -86,7 +86,6 @@ JXG.themes['obsidian'] = {
 
 	circumcircle: {
 		strokeColor: interactiveAccent,
-		highlightFillColor: interactiveAccentHover,
 		highlightStrokeColor: interactiveAccentHover,
 		center: {
 			fillColor: interactiveAccent,
