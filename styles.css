@@ -1,16 +1,22 @@
+:root {
+	--graph-height: 300px;
+	--graph-width: 300px;
+	--graph-alignment: 0 auto;
+}
 
 .jxgbox {
     /* for IE 7 */
     position: relative;
     overflow: hidden;
-	height: 300px;
+	height: var(--graph-height);
+	max-width: var(--graph-width);
     background-color: var(--background-secondary);
     border-style: solid;
     border-width: 1px;
     border-color: var(--background-modifier-border);
     border-radius: 10px;
     -webkit-border-radius: 10px;
-    margin: 0;
+    margin: var(--graph-alignment);
     -ms-touch-action: none;
     /* "touch-action: none;" is set with JavaScript. */
 }
