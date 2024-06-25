@@ -4,12 +4,18 @@ import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
 import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
+import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 
 export default class ObsidianGraphs extends Plugin {
+	settings: ObsidianGraphsSettings
 	currentFileName: string;
 	count = 0;
 
 	async onload () {
+		await this.loadSettings();
+
+		this.addSettingTab(new ObsidianGraphsSettingsTab(this.app, this));
+
 		await loadMathJax();
 
 		//@ts-ignore
@@ -126,5 +132,16 @@ export default class ObsidianGraphs extends Plugin {
 			JSXGraph.freeBoard(boards[key]);
 			div.remove();
 		}
+	}
+
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		document.documentElement.style.setProperty("--graph-height", this.settings.height + "px");
+		document.documentElement.style.setProperty("--graph-width", this.settings.width + "px");
+		document.documentElement.style.setProperty("--graph-alignment", this.settings.alignment);
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
 	}
 }
