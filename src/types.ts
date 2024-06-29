@@ -24,6 +24,9 @@ export interface GraphInfo {
 	defaultAxes: any,
 	drag: boolean,
 	elements: ElementInfo[],
+	// plugin specific settings
+	height: number | undefined,
+	width: number | undefined,
 }
 
 export interface ElementInfo {
