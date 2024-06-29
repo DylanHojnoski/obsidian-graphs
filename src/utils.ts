@@ -73,7 +73,7 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 												showNavigation: graphInfo.showNavigation,
 												defaultAxes: graphInfo.defaultAxes,
 												//@ts-ignore
-												theme: 'mono_thin',
+												theme: 'obsidian',
 												keepAspectRatio: graphInfo.keepAspectRatio});
 
 	return graph;
