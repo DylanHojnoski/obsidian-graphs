@@ -20,7 +20,9 @@ export function parseCodeBlock(source: string) :GraphInfo {
 							drag: true,
 							showNavigation: true,
 							axis: true, defaultAxes: JXG.Options.board.defaultAxes,
-							elements: []};
+							elements: [],
+							height: undefined,
+							width: undefined};
 
 	// there is nothing inside of the codeblock
 	if (source == null || source == "") {
@@ -75,6 +77,13 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 												//@ts-ignore
 												theme: 'obsidian',
 												keepAspectRatio: graphInfo.keepAspectRatio});
+
+	if (graphInfo.height) {
+		graphDiv.style.height = graphInfo.height + "px";
+	}
+	if (graphInfo.width) {
+		graphDiv.style.maxWidth = graphInfo.width + "px";
+	}
 
 	return graph;
 }
