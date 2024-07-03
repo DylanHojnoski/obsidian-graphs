@@ -2,11 +2,16 @@
 
 Plugin of [Obsidian](https://obsidian.md/) that creates interactive graphs from YAML.
 
-A nice feature of this plugin is that the graphs use colors from you Obsidian theme so it will match the rest of your notes.
-
 This file only covers the basics of how to use this plugin for more information go to [Graphs Wiki](https://github.com/DylanHojnoski/obsidian-graphs/wiki).
 
 If you have a cool graph that helps show the capabilities of this plugin please post it in this thread [discussion](https://github.com/DylanHojnoski/obsidian-graphs/discussions/15).
+
+## Features
+
+* Built in graph types (circle, derivative, vector fields, etc.)
+* complex mathematical function support
+* Interactable
+* Obsidian theme support
 
 ## Installation
 
