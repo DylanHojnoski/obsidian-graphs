@@ -111,12 +111,12 @@ export default class ObsidianGraphs extends Plugin {
 			if (graphInfo.elements != undefined) {
 				// add every element to the graph 
 				for (let i = 0; i < graphInfo.elements.length; i++) {
-					try {
+					//try {
 						addElement(board, graphInfo.elements[i], createdElements);
-					} catch (e) {
+					/*} catch (e) {
 						renderError(e,element);
 						return;
-					}
+					}*/
 				}
 			}
 		});

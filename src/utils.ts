@@ -22,7 +22,8 @@ export function parseCodeBlock(source: string) :GraphInfo {
 							axis: true, defaultAxes: JXG.Options.board.defaultAxes,
 							elements: [],
 							height: undefined,
-							width: undefined};
+							width: undefined,
+							_3D: false};
 
 	// there is nothing inside of the codeblock
 	if (source == null || source == "") {
@@ -107,6 +108,11 @@ function validateBounds(bounds: number[]) {
 
 export function addElement(board: Board, element: ElementInfo, createdElements: JSXElement[]) {
 	validateElement(element, createdElements);
+
+	if (element.type.contains("3d")) {
+		let view3d = createdElements[element.def.shift()];
+		console.log(view3d);
+	}
 
 	if (element.att == undefined) {
 		const createdElement: GeometryElement = board.create(element.type, element.def);

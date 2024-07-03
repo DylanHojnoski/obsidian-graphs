@@ -27,6 +27,7 @@ export interface GraphInfo {
 	// plugin specific settings
 	height: number | undefined,
 	width: number | undefined,
+	_3D: boolean,
 }
 
 export interface ElementInfo {
