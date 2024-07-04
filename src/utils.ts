@@ -3,7 +3,6 @@ import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
 
 export class Utils {
-
 	argsArray: string[];
 	mathFunctions: any[];
 
@@ -15,7 +14,6 @@ export class Utils {
 			//@ts-ignore
 			this.mathFunctions.push(Math[name]);
 		}
-
 	}
 
 	parseCodeBlock(source: string) :GraphInfo {
@@ -93,7 +91,7 @@ export class Utils {
 		return graph;
 	}
 
-	validateBounds(bounds: number[]) {
+	private validateBounds(bounds: number[]) {
 		const xmin = bounds[0];
 		const xmax = bounds[2];
 		const ymin = bounds[3];
@@ -123,7 +121,7 @@ export class Utils {
 		createdElements.push({name: element.type, element: createdElement});
 	}
 
-	validateElement(element: ElementInfo, createdElements: JSXElement[]) {
+	private validateElement(element: ElementInfo, createdElements: JSXElement[]) {
 		if (element.type == undefined &&  element.def == undefined) {
 			throw new SyntaxError("Element " + createdElements.length + " type and def is not defined");
 		}
@@ -138,7 +136,7 @@ export class Utils {
 		this.validateAtt(element, createdElements);
 	}
 
-	validateDef(def: any[], createdElements: JSXElement[]) {
+	private validateDef(def: any[], createdElements: JSXElement[]) {
 		for (let i = 0; i < def.length; i++) {
 			if (Array.isArray(def[i])) {
 				this.validateDef(def[i], createdElements);
@@ -152,7 +150,7 @@ export class Utils {
 		}
 	}
 
-	checkComposedElements(item: any, createdElements: JSXElement[]): number {
+	private checkComposedElements(item: any, createdElements: JSXElement[]): number {
 		const re  = new RegExp("^e[0-9]+$");
 		// if it is a string and passes the regex test add the element to def
 		if (typeof item === 'string' && re.test(item)) {
@@ -168,7 +166,7 @@ export class Utils {
 		return -1;
 	}
 
-	validateAtt(element: ElementInfo, createdElements: JSXElement[]) {
+	private validateAtt(element: ElementInfo, createdElements: JSXElement[]) {
 		// check attributes for elements
 		if (element.att != undefined) {
 			if (typeof element.att.anchor === 'string') {
@@ -190,7 +188,7 @@ export class Utils {
 		}
 	}
 
-	changeColorValue(value: string): string {
+	private changeColorValue(value: string): string {
 		switch(value.toLowerCase()) {
 			case "red":
 				return "var(--color-red)";
@@ -213,7 +211,7 @@ export class Utils {
 		}
 	}
 
-	checkFunction(item: any, createdElements: JSXElement[]): any {
+	private checkFunction(item: any, createdElements: JSXElement[]): any {
 		// regex to check if it is the start of a function
 		const f = RegExp("f:")
 
@@ -246,13 +244,7 @@ export class Utils {
 			// create function that is used to calculate the values
 			return  new Function(...this.argsArray, "createdElements", "x", "y", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
 		}
-		else if (Array.isArray(item)) {
-			for (let i = 0; i < item.length; i++) {
-				item[i] = this.checkFunction(item[i], createdElements);
-			}
-		}
 		return item;
 	}
-
 }
 
