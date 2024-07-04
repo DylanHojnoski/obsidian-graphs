@@ -2,14 +2,15 @@ import { loadMathJax, Plugin } from 'obsidian';
 import { Board, boards, JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { GraphInfo, JSXElement } from 'src/types';
-import { addElement, createBoard, parseCodeBlock, setMathFunctions } from 'src/utils';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
+import { Utils } from 'src/utils';
 
 export default class ObsidianGraphs extends Plugin {
 	settings: ObsidianGraphsSettings
 	currentFileName: string;
 	count = 0;
+	utils: Utils = new Utils();
 
 	async onload () {
 		await this.loadSettings();
@@ -29,8 +30,6 @@ export default class ObsidianGraphs extends Plugin {
 			//@ts-ignore
 			await MathJax.startup.getComponents();
 		}
-
-		setMathFunctions();
 
 		this.app.workspace.on("file-open" , () => {
 
@@ -70,13 +69,13 @@ export default class ObsidianGraphs extends Plugin {
 			}
 		});
 
-		this.registerMarkdownCodeBlockProcessor("graph", (source, element, context) => {
+		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
 
 			let graphInfo: GraphInfo;
 
 			try {
 				// parse the JSON from the code block
-				graphInfo = parseCodeBlock(source);
+				graphInfo = this.utils.parseCodeBlock(source);
 			} catch (e) {
 				renderError(e,element);
 				return;
@@ -100,7 +99,7 @@ export default class ObsidianGraphs extends Plugin {
 
 			try {
 				// create the board
-				board = createBoard(graphDiv, graphInfo);
+				board = this.utils.createBoard(graphDiv, graphInfo);
 			} catch (e) {
 				renderError(e,element);
 				return;
@@ -112,7 +111,7 @@ export default class ObsidianGraphs extends Plugin {
 				// add every element to the graph 
 				for (let i = 0; i < graphInfo.elements.length; i++) {
 					try {
-						addElement(board, graphInfo.elements[i], createdElements);
+						this.utils.addElement(board, graphInfo.elements[i], createdElements);
 					} catch (e) {
 						renderError(e,element);
 						return;
