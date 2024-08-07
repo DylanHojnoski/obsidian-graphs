@@ -1,8 +1,8 @@
-import { GeometryElement } from "jsxgraph";
+import { GeometryElement, View3D } from "jsxgraph";
 
 export interface JSXElement {
 	name: string,
-	element: GeometryElement
+	element: GeometryElement | View3D
 }
 
 export interface GraphInfo {
@@ -27,7 +27,11 @@ export interface GraphInfo {
 	// plugin specific settings
 	height: number | undefined,
 	width: number | undefined,
-	_3D: boolean,
+	bounds3d: [
+		[ x1: number , y1: number ], // lower left corner
+		[ x2: number, y2: number ], // length of sides
+		[ x3: number, y3: number]
+	] | undefined
 }
 
 export interface ElementInfo {

@@ -93,6 +93,8 @@ export default class ObsidianGraphs extends Plugin {
 				}
 			}
 
+			const createdElements: JSXElement[] = [];
+
 			// create the div that contains the board
 			const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
 			graphDiv.id = "graph" + this.count;
@@ -100,23 +102,22 @@ export default class ObsidianGraphs extends Plugin {
 
 			try {
 				// create the board
-				board = createBoard(graphDiv, graphInfo);
+				board = createBoard(graphDiv, graphInfo, createdElements);
 			} catch (e) {
 				renderError(e,element);
 				return;
 			}
 
-			const createdElements: JSXElement[] = [];
 
 			if (graphInfo.elements != undefined) {
 				// add every element to the graph 
 				for (let i = 0; i < graphInfo.elements.length; i++) {
-					//try {
+					try {
 						addElement(board, graphInfo.elements[i], createdElements);
-					/*} catch (e) {
+					} catch (e) {
 						renderError(e,element);
 						return;
-					}*/
+					}
 				}
 			}
 		});

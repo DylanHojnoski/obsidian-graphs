@@ -1,4 +1,4 @@
-import { Board, JSXGraph, GeometryElement } from "jsxgraph";
+import { Board, JSXGraph, GeometryElement, View3D } from "jsxgraph";
 import { parseYaml } from "obsidian";
 import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
 
@@ -23,7 +23,7 @@ export function parseCodeBlock(source: string) :GraphInfo {
 							elements: [],
 							height: undefined,
 							width: undefined,
-							_3D: false};
+							bounds3d: undefined};
 
 	// there is nothing inside of the codeblock
 	if (source == null || source == "") {
@@ -59,7 +59,7 @@ export function parseCodeBlock(source: string) :GraphInfo {
 	}
 }
 
-export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board {
+export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo, createdElements: JSXElement[] ) :Board {
 
 	// make sure that the are defined
 	if (graphInfo.bounds == undefined && graphInfo.elements == undefined && graphInfo.keepAspectRatio == undefined) {
@@ -84,6 +84,14 @@ export function createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board 
 	}
 	if (graphInfo.width) {
 		graphDiv.style.maxWidth = graphInfo.width + "px";
+	}
+	if (graphInfo.bounds3d != undefined) {
+		const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
+		const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
+		const xMin = graphInfo.bounds[0] <= 0 ? graphInfo.bounds[0] + xLength*0.15 : graphInfo.bounds[0] - xLength*0.15; 
+		const yMin = graphInfo.bounds[3] <= 0 ? graphInfo.bounds[3] + yLength*0.15 : graphInfo.bounds[3] - yLength*0.15; 
+		const view3d: View3D = graph.create("view3d",[[xMin, yMin], [xLength-xLength*0.3, yLength-yLength*0.3], graphInfo.bounds3d] );
+		createdElements.push({name : "view3d", element: view3d});
 	}
 
 	return graph;
@@ -110,11 +118,24 @@ export function addElement(board: Board, element: ElementInfo, createdElements: 
 	validateElement(element, createdElements);
 
 	if (element.type.contains("3d")) {
-		let view3d = createdElements[element.def.shift()];
-		console.log(view3d);
-	}
+		const view3d = createdElements[0];
+		if (view3d.name != "view3d") {
+			throw new SyntaxError("Can't create 3d element without setting 3d bounds");
+		}
 
-	if (element.att == undefined) {
+		if (element.att == undefined) {
+			//@ts-ignore
+			const createdElement = view3d.element.create(element.type, element.def);
+			createdElements.push({name: element.type, element: createdElement});
+		}
+		else {
+			//@ts-ignore
+			const createdElement = view3d.element.create(element.type, element.def, element.att);
+			createdElements.push({name: element.type, element: createdElement});
+		}
+
+	}
+	else if (element.att == undefined) {
 		const createdElement: GeometryElement = board.create(element.type, element.def);
 		createdElements.push({name: element.type, element: createdElement});
 	}
