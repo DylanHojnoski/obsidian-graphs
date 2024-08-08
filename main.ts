@@ -1,7 +1,7 @@
 import { loadMathJax, Plugin } from 'obsidian';
-import { Board, boards, JSXGraph } from 'jsxgraph';
+import {  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
-import { GraphInfo, JSXElement } from 'src/types';
+import { GraphInfo, Graph } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
@@ -11,6 +11,7 @@ export default class ObsidianGraphs extends Plugin {
 	currentFileName: string;
 	count = 0;
 	utils: Utils = new Utils();
+	graphs: Graph[] = [];
 
 	async onload () {
 		await this.loadSettings();
@@ -45,11 +46,9 @@ export default class ObsidianGraphs extends Plugin {
 			files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
 
 			// go through all the boards and delete ones that are not in active files
-			//@ts-ignore
-			for (const key in boards) {
+			for (const graph of this.graphs) {
 				let active = false;
-				//@ts-ignore
-				const div = boards[key].containerObj;
+				const div = graph.board.containerObj;
 
 				// check the if it is in the active files
 				for (const name of activeFileNames) {
@@ -61,10 +60,8 @@ export default class ObsidianGraphs extends Plugin {
 
 				// it is not in active files so delete
 				if (!active) {
-					//@ts-ignore
-					boards[key].containerObj.remove();
-					//@ts-ignore
-					JSXGraph.freeBoard(boards[key]);
+					graph.board.containerObj.remove();
+					JSXGraph.freeBoard(graph.board);
 				}
 			}
 		});
@@ -81,7 +78,7 @@ export default class ObsidianGraphs extends Plugin {
 				return;
 			}
 
-			let board: Board;
+			let graph: Graph;
 
 			// if the current file name is undefined need to get the current file
 			if (this.currentFileName == undefined) {
@@ -99,19 +96,18 @@ export default class ObsidianGraphs extends Plugin {
 
 			try {
 				// create the board
-				board = this.utils.createBoard(graphDiv, graphInfo);
+				graph = this.utils.createBoard(graphDiv, graphInfo);
+				this.graphs.push(graph);
 			} catch (e) {
 				renderError(e,element);
 				return;
 			}
 
-			const createdElements: JSXElement[] = [];
-
 			if (graphInfo.elements != undefined) {
 				// add every element to the graph 
 				for (let i = 0; i < graphInfo.elements.length; i++) {
 					try {
-						this.utils.addElement(board, graphInfo.elements[i], createdElements);
+						this.utils.addElement(graph, graphInfo.elements[i]);
 					} catch (e) {
 						renderError(e,element);
 						return;
@@ -122,13 +118,10 @@ export default class ObsidianGraphs extends Plugin {
 	}
 
 	onunload() {
-		//@ts-ignore
-		for (const key in boards) {
-			//@ts-ignore
-			const div = boards[key].containerObj;
+		for (const graph of this.graphs) {
+			const div = graph.board.containerObj;
 
-			//@ts-ignore
-			JSXGraph.freeBoard(boards[key]);
+			JSXGraph.freeBoard(graph.board);
 			div.remove();
 		}
 	}

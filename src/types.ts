@@ -1,4 +1,4 @@
-import { GeometryElement } from "jsxgraph";
+import { Board, GeometryElement, View3D } from "jsxgraph";
 
 export interface JSXElement {
 	name: string,
@@ -27,6 +27,17 @@ export interface GraphInfo {
 	// plugin specific settings
 	height: number | undefined,
 	width: number | undefined,
+	bounds3d: [
+		[ x1: number, y1: number ],
+		[ x2: number, y2: number ],
+		[ x3: number, y3: number ],
+	] | undefined
+}
+
+export interface Graph {
+	board: Board,
+	createdElements: JSXElement[],
+	view3d: View3D | undefined
 }
 
 export interface ElementInfo {

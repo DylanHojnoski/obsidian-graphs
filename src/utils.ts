@@ -1,6 +1,6 @@
-import { Board, JSXGraph, GeometryElement } from "jsxgraph";
+import { Board, JSXGraph, GeometryElement, View3D } from "jsxgraph";
 import { parseYaml } from "obsidian";
-import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
+import { ElementInfo, Graph, GraphInfo, JSXElement, Types } from "./types";
 
 export class Utils {
 	argsArray: string[];
@@ -25,7 +25,8 @@ export class Utils {
 								axis: true, defaultAxes: JXG.Options.board.defaultAxes,
 								elements: [],
 								height: undefined,
-								width: undefined};
+								width: undefined,
+								bounds3d: undefined};
 
 		// there is nothing inside of the codeblock
 		if (source == null || source == "") {
@@ -61,7 +62,7 @@ export class Utils {
 		}
 	}
 
-	createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board {
+	createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) : Graph {
 
 		// make sure that the are defined
 		if (graphInfo.bounds == undefined && graphInfo.elements == undefined && graphInfo.keepAspectRatio == undefined) {
@@ -71,7 +72,7 @@ export class Utils {
 		this.validateBounds(graphInfo.bounds);
 
 		// create the board for the graph
-		const graph = JSXGraph.initBoard(graphDiv, {boundingBox: graphInfo.bounds,
+		const board = JSXGraph.initBoard(graphDiv, {boundingBox: graphInfo.bounds,
 													maxBoundingBox: graphInfo.maxBoundingBox,
 													drag: {enabled: graphInfo.drag},
 													axis: graphInfo.axis,
@@ -80,12 +81,24 @@ export class Utils {
 													//@ts-ignore
 													theme: 'obsidian',
 													keepAspectRatio: graphInfo.keepAspectRatio});
+		const graph: Graph = {
+			board: board,
+			createdElements: [],
+			view3d: undefined
+		}
 
 		if (graphInfo.height) {
 			graphDiv.style.height = graphInfo.height + "px";
 		}
 		if (graphInfo.width) {
 			graphDiv.style.maxWidth = graphInfo.width + "px";
+		}
+		if (graphInfo.bounds3d != undefined) {
+			const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
+			const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
+			const xMin = graphInfo.bounds[0] <= 0 ? graphInfo.bounds[0] + xLength*0.15 : graphInfo.bounds[0] - xLength*0.15; 
+			const yMin = graphInfo.bounds[3] <= 0 ? graphInfo.bounds[3] + yLength*0.15 : graphInfo.bounds[3] - yLength*0.15; 
+			graph.view3d = board.create("view3d",[[xMin, yMin], [xLength-xLength*0.3, yLength-yLength*0.3], graphInfo.bounds3d] );
 		}
 
 		return graph;
@@ -108,17 +121,29 @@ export class Utils {
 		}
 	}
 
-	addElement(board: Board, element: ElementInfo, createdElements: JSXElement[]) {
-		this.validateElement(element, createdElements);
+	addElement(graph: Graph, element: ElementInfo) {
+		this.validateElement(element, graph.createdElements);
 		let createdElement: GeometryElement;
+		let createOn: Board | View3D = graph.board;
+
+		if (element.type.contains("3d") ) {
+			if (graph.view3d != undefined) {
+				createOn = graph.view3d;
+			}
+			else {
+				throw new SyntaxError("Have to set 3d bounds to use 3d elements");
+			}
+		}
 
 		if (element.att == undefined) {
-			createdElement = board.create(element.type, element.def);
+			//@ts-ignore
+			createdElement = createOn.create(element.type, element.def);
 		}
 		else {
-			createdElement = board.create(element.type, element.def, element.att);
+			//@ts-ignore
+			createdElement = createOn.create(element.type, element.def, element.att);
 		}
-		createdElements.push({name: element.type, element: createdElement});
+		graph.createdElements.push({name: element.type, element: createdElement});
 	}
 
 	private validateElement(element: ElementInfo, createdElements: JSXElement[]) {
