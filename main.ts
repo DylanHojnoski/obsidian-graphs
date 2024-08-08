@@ -1,7 +1,7 @@
 import { loadMathJax, Plugin } from 'obsidian';
-import {  JSXGraph } from 'jsxgraph';
+import { Board, boards,  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
-import { GraphInfo, Graph } from 'src/types';
+import { GraphInfo, JSXElement } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
@@ -11,7 +11,6 @@ export default class ObsidianGraphs extends Plugin {
 	currentFileName: string;
 	count = 0;
 	utils: Utils = new Utils();
-	graphs: Graph[] = [];
 
 	async onload () {
 		await this.loadSettings();
@@ -46,9 +45,11 @@ export default class ObsidianGraphs extends Plugin {
 			files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
 
 			// go through all the boards and delete ones that are not in active files
-			for (const graph of this.graphs) {
+			//@ts-ignore
+			for (const key in boards) {
 				let active = false;
-				const div = graph.board.containerObj;
+				//@ts-ignore
+				const div = boards[key].containerObj;
 
 				// check the if it is in the active files
 				for (const name of activeFileNames) {
@@ -60,8 +61,10 @@ export default class ObsidianGraphs extends Plugin {
 
 				// it is not in active files so delete
 				if (!active) {
-					graph.board.containerObj.remove();
-					JSXGraph.freeBoard(graph.board);
+					//@ts-ignore
+					boards[key].containerObj.remove();
+					//@ts-ignore
+					JSXGraph.freeBoard(boards[key]);
 				}
 			}
 		});
@@ -97,7 +100,6 @@ export default class ObsidianGraphs extends Plugin {
 			try {
 				// create the board
 				graph = this.utils.createBoard(graphDiv, graphInfo);
-				this.graphs.push(graph);
 			} catch (e) {
 				renderError(e,element);
 				return;
@@ -118,10 +120,13 @@ export default class ObsidianGraphs extends Plugin {
 	}
 
 	onunload() {
-		for (const graph of this.graphs) {
-			const div = graph.board.containerObj;
+		//@ts-ignore
+		for (const key in boards) {
+			//@ts-ignore
+			const div = boards[key].containerObj;
 
-			JSXGraph.freeBoard(graph.board);
+			//@ts-ignore
+			JSXGraph.freeBoard(boards[key]);
 			div.remove();
 		}
 	}

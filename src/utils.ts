@@ -94,6 +94,7 @@ export class Utils {
 			graphDiv.style.maxWidth = graphInfo.width + "px";
 		}
 		if (graphInfo.bounds3d != undefined) {
+			this.validate3dBounds(graphInfo.bounds3d);
 			const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
 			const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
 			const xMin = graphInfo.bounds[0] <= 0 ? graphInfo.bounds[0] + xLength*0.15 : graphInfo.bounds[0] - xLength*0.15; 
@@ -118,6 +119,21 @@ export class Utils {
 		}
 		if (ymin >= ymax) {
 			throw new SyntaxError("Bounds Ymin is greater than or equal to Ymax");
+		}
+	}
+
+	private validate3dBounds(bounds: number[][]) {
+		if (bounds.length != 3) {
+			throw new SyntaxError("The amount of 3d bounds given is incorrect");
+		}
+
+		for (let i = 0; i < 3; i++) {
+			if (bounds[i].length != 2) {
+				throw new SyntaxError("The amount of 3d bounds given is incorrect");
+			}
+			if (bounds[i][0] >= bounds[i][1]) {
+				throw new SyntaxError("The amount of 3d bounds given is incorrect");
+			}
 		}
 	}
 
