@@ -31,8 +31,36 @@ export interface GraphInfo {
 		[ x1: number, y1: number ],
 		[ x2: number, y2: number ],
 		[ x3: number, y3: number ],
-	] | undefined
+	] | undefined,
+	att3d: Att3d | undefined,
 }
+	export interface Att3d {
+		axisPosition: string,
+
+		xAxis: Attributes ,
+		xPlaneFront: Attributes,
+		xPlaneFrontYAxis: Attributes,
+		xPlaneFrontZAxis: Attributes,
+		xPlaneRear: Attributes,
+		xPlaneRearYAxis: Attributes,
+		xPlaneRearZAxis: Attributes,
+
+		yAxis: Attributes,
+		yPlaneFront: Attributes,  
+		yPlaneFrontXAxis: Attributes,
+		yPlaneFrontZAxis: Attributes,
+		yPlaneRear: Attributes,
+		yPlaneRearXAxis: Attributes,
+		yPlaneRearZAxis: Attributes,
+
+		zAxis: Attributes,
+		zPlaneFront: Attributes,
+		zPlaneFrontXAxis: Attributes,
+		zPlaneFrontYAxis: Attributes,
+		zPlaneRear: Attributes,
+		zPlaneRearXAxis: Attributes,
+		zPlaneRearYAxis: Attributes,
+	}
 
 export interface Graph {
 	board: Board,
@@ -43,10 +71,10 @@ export interface Graph {
 export interface ElementInfo {
 	type: string,
 	def: any[],
-	att: Attributes,
+	att: Attributes | Att3d | undefined,
 }
 
-export type  Attributes = {
+export interface Attributes {
 	name: string,
 	inverse: boolean,
 	chartStyle: string,

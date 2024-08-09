@@ -1,7 +1,7 @@
 import { loadMathJax, Plugin } from 'obsidian';
-import { Board, boards,  JSXGraph } from 'jsxgraph';
+import { boards,  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
-import { GraphInfo, JSXElement } from 'src/types';
+import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
