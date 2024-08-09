@@ -17,6 +17,8 @@ export default class ObsidianGraphs extends Plugin {
 
 		this.addSettingTab(new ObsidianGraphsSettingsTab(this.app, this));
 
+		window.CodeMirror.defineMode("graph", config => window.CodeMirror.getMode(config, "yaml"));
+
 		await loadMathJax();
 
 		//@ts-ignore
