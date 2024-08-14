@@ -314,7 +314,7 @@ export class Utils {
 
 			const equation = item;
 			// create function that is used to calculate the values
-			return  new Function(...this.argsArray, "createdElements", "x", "y", "z", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
+			return  new Function(...this.argsArray, "createdElements", "x", "y", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
 	}

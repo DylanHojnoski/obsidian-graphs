@@ -34,13 +34,13 @@ JXG.themes['obsidian'] = {
 			strokeColor: "var(--color-blue)",
 		},
 		xPlaneRear: {
-			fillColor: textNormal,
+			fillColor: textMuted,
 		},
 		yPlaneRear: {
-			fillColor: textNormal,
+			fillColor: textMuted,
 		},
 		zPlaneRear: {
-			fillColor: textNormal,
+			fillColor: textMuted,
 		},
 	},
 
@@ -51,6 +51,16 @@ JXG.themes['obsidian'] = {
 
 	line3d: {
 		strokeColor: interactiveAccent,
+	},
+
+	sphere3d: {
+		fillColor: interactiveAccent,
+		strokeColor: interactiveAccent,
+		gradient: 'radial',
+		gradientSecondColor: interactiveAccent,
+		gradientFX: 0.7,
+		gradientFY: 0.3,
+		fillOpacity: 0.4
 	},
 
 	ellipse: {
