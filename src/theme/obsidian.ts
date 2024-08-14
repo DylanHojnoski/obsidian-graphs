@@ -23,6 +23,46 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 	},
 
+	view3d: {
+		xAxis: {
+			strokeColor: "var(--color-orange)",
+		},
+		yAxis: {
+			strokeColor: "var(--color-green)",
+		},
+		zAxis: {
+			strokeColor: "var(--color-blue)",
+		},
+		xPlaneRear: {
+			fillColor: textMuted,
+		},
+		yPlaneRear: {
+			fillColor: textMuted,
+		},
+		zPlaneRear: {
+			fillColor: textMuted,
+		},
+	},
+
+	point3d: {
+		fillColor: interactiveAccent,
+		strokeColor: interactiveAccent,
+	},
+
+	line3d: {
+		strokeColor: interactiveAccent,
+	},
+
+	sphere3d: {
+		fillColor: interactiveAccent,
+		strokeColor: interactiveAccent,
+		gradient: 'radial',
+		gradientSecondColor: interactiveAccent,
+		gradientFX: 0.7,
+		gradientFY: 0.3,
+		fillOpacity: 0.4
+	},
+
 	ellipse: {
 		strokeColor: interactiveAccent,
 		fillColor: interactiveAccent,

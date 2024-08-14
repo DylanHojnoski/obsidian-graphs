@@ -1,6 +1,6 @@
-import { Board, JSXGraph, GeometryElement } from "jsxgraph";
+import { Board, JSXGraph, GeometryElement, View3D } from "jsxgraph";
 import { parseYaml } from "obsidian";
-import { ElementInfo, GraphInfo, JSXElement, Types } from "./types";
+import { Att3d, Attributes, ElementInfo, Graph, GraphInfo, JSXElement, Types } from "./types";
 
 export class Utils {
 	argsArray: string[];
@@ -25,7 +25,9 @@ export class Utils {
 								axis: true, defaultAxes: JXG.Options.board.defaultAxes,
 								elements: [],
 								height: undefined,
-								width: undefined};
+								width: undefined,
+								bounds3d: undefined,
+								att3d: undefined};
 
 		// there is nothing inside of the codeblock
 		if (source == null || source == "") {
@@ -61,7 +63,7 @@ export class Utils {
 		}
 	}
 
-	createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo) :Board {
+	createBoard(graphDiv: HTMLElement, graphInfo: GraphInfo): Graph {
 
 		// make sure that the are defined
 		if (graphInfo.bounds == undefined && graphInfo.elements == undefined && graphInfo.keepAspectRatio == undefined) {
@@ -71,7 +73,7 @@ export class Utils {
 		this.validateBounds(graphInfo.bounds);
 
 		// create the board for the graph
-		const graph = JSXGraph.initBoard(graphDiv, {boundingBox: graphInfo.bounds,
+		const board = JSXGraph.initBoard(graphDiv, {boundingBox: graphInfo.bounds,
 													maxBoundingBox: graphInfo.maxBoundingBox,
 													drag: {enabled: graphInfo.drag},
 													axis: graphInfo.axis,
@@ -80,12 +82,41 @@ export class Utils {
 													//@ts-ignore
 													theme: 'obsidian',
 													keepAspectRatio: graphInfo.keepAspectRatio});
+		const graph: Graph = {
+			board: board,
+			createdElements: [],
+			view3d: undefined
+		}
 
 		if (graphInfo.height) {
 			graphDiv.style.height = graphInfo.height + "px";
 		}
 		if (graphInfo.width) {
 			graphDiv.style.maxWidth = graphInfo.width + "px";
+		}
+		if (graphInfo.bounds3d != undefined) {
+			this.validate3dBounds(graphInfo.bounds3d);
+
+			const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
+			const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
+			const xMin = graphInfo.bounds[0] <= 0 ? graphInfo.bounds[0] + xLength*0.15 : graphInfo.bounds[0] - xLength*0.15; 
+			const yMin = graphInfo.bounds[3] <= 0 ? graphInfo.bounds[3] + yLength*0.15 : graphInfo.bounds[3] - yLength*0.15; 
+
+			const element: ElementInfo = {
+				type: "view3d",
+				def: [[xMin, yMin], [xLength-xLength*0.3, yLength-yLength*0.3], graphInfo.bounds3d],
+				att: graphInfo.att3d
+			}
+
+
+			if (graphInfo.att3d == undefined) {
+				graph.view3d = board.create("view3d", [[xMin, yMin], [xLength-xLength*0.3, yLength-yLength*0.3], graphInfo.bounds3d])
+			}
+			else {
+				this.checkComposedAtts(graphInfo.att3d, graph.createdElements);
+				//@ts-ignore
+				graph.view3d = board.create(element.type, element.def, element.att);
+			}
 		}
 
 		return graph;
@@ -108,17 +139,44 @@ export class Utils {
 		}
 	}
 
-	addElement(board: Board, element: ElementInfo, createdElements: JSXElement[]) {
-		this.validateElement(element, createdElements);
+	private validate3dBounds(bounds: number[][]) {
+		if (bounds.length != 3) {
+			throw new SyntaxError("The amount of 3d bounds given is incorrect");
+		}
+
+		for (let i = 0; i < 3; i++) {
+			if (bounds[i].length != 2) {
+				throw new SyntaxError("The amount of 3d bounds given is incorrect");
+			}
+			if (bounds[i][0] >= bounds[i][1]) {
+				throw new SyntaxError("The amount of 3d bounds given is incorrect");
+			}
+		}
+	}
+
+	addElement(graph: Graph, element: ElementInfo) {
+		this.validateElement(element, graph.createdElements);
 		let createdElement: GeometryElement;
+		let createOn: Board | View3D = graph.board;
+
+		if (element.type.contains("3d") ) {
+			if (graph.view3d != undefined) {
+				createOn = graph.view3d;
+			}
+			else {
+				throw new SyntaxError("Have to set 3d bounds to use 3d elements");
+			}
+		}
 
 		if (element.att == undefined) {
-			createdElement = board.create(element.type, element.def);
+			//@ts-ignore
+			createdElement = createOn.create(element.type, element.def);
 		}
 		else {
-			createdElement = board.create(element.type, element.def, element.att);
+			//@ts-ignore
+			createdElement = createOn.create(element.type, element.def, element.att);
 		}
-		createdElements.push({name: element.type, element: createdElement});
+		graph.createdElements.push({name: element.type, element: createdElement});
 	}
 
 	private validateElement(element: ElementInfo, createdElements: JSXElement[]) {
@@ -133,7 +191,7 @@ export class Utils {
 		}
 
 		this.validateDef(element.def, createdElements);
-		this.validateAtt(element, createdElements);
+		this.checkComposedAtts(element.att as Attributes, createdElements);
 	}
 
 	private validateDef(def: any[], createdElements: JSXElement[]) {
@@ -166,24 +224,38 @@ export class Utils {
 		return -1;
 	}
 
-	private validateAtt(element: ElementInfo, createdElements: JSXElement[]) {
+	private checkComposedAtts(att: Attributes | Att3d, createdElements: JSXElement[]) {
+		if (att != undefined) {
+			this.validateAtt(att as Attributes, createdElements);
+			for (const key of Object.keys(att)) {
+				//@ts-ignore
+				if (typeof att[key] === 'object') {
+					//@ts-ignore
+					this.checkComposedAtts(att[key], createdElements);
+				}
+			}
+		}
+
+	}
+
+	private validateAtt(attribute: Attributes, createdElements: JSXElement[]) {
 		// check attributes for elements
-		if (element.att != undefined) {
-			if (typeof element.att.anchor === 'string') {
-				const index = this.checkComposedElements(element.att.anchor, createdElements);
-				element.att.anchor = createdElements[index].element;
+		if (attribute != undefined) {
+			if (typeof attribute.anchor === 'string') {
+				const index = this.checkComposedElements(attribute.anchor, createdElements);
+				attribute.anchor = createdElements[index].element;
 			}
-			if (typeof element.att.fillColor === 'string') {
-				element.att.fillColor = this.changeColorValue(element.att.fillColor);
+			if (typeof attribute.fillColor === 'string') {
+				attribute.fillColor = this.changeColorValue(attribute.fillColor);
 			}
-			if (typeof element.att.strokeColor === 'string') {
-				element.att.strokeColor = this.changeColorValue(element.att.strokeColor);
+			if (typeof attribute.strokeColor === 'string') {
+				attribute.strokeColor = this.changeColorValue(attribute.strokeColor);
 			}
-			if (typeof element.att.highlightFillColor === 'string') {
-				element.att.highlightFillColor= this.changeColorValue(element.att.highlightFillColor);
+			if (typeof attribute.highlightFillColor === 'string') {
+				attribute.highlightFillColor= this.changeColorValue(attribute.highlightFillColor);
 			}
-			if (typeof element.att.highlightStrokeColor === 'string') {
-				element.att.highlightStrokeColor = this.changeColorValue(element.att.highlightStrokeColor);
+			if (typeof attribute.highlightStrokeColor === 'string') {
+				attribute.highlightStrokeColor = this.changeColorValue(attribute.highlightStrokeColor);
 			}
 		}
 	}
@@ -241,8 +313,9 @@ export class Utils {
 			}
 
 			const equation = item;
+
 			// create function that is used to calculate the values
-			return  new Function(...this.argsArray, "createdElements", "x", "y", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
+			return  new Function(...this.argsArray, "createdElements", "x", "y", "z", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
 	}

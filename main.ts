@@ -1,7 +1,7 @@
 import { loadMathJax, Plugin } from 'obsidian';
-import { Board, boards, JSXGraph } from 'jsxgraph';
+import { boards,  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
-import { GraphInfo, JSXElement } from 'src/types';
+import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
@@ -83,7 +83,7 @@ export default class ObsidianGraphs extends Plugin {
 				return;
 			}
 
-			let board: Board;
+			let graph: Graph;
 
 			// if the current file name is undefined need to get the current file
 			if (this.currentFileName == undefined) {
@@ -101,19 +101,17 @@ export default class ObsidianGraphs extends Plugin {
 
 			try {
 				// create the board
-				board = this.utils.createBoard(graphDiv, graphInfo);
+				graph = this.utils.createBoard(graphDiv, graphInfo);
 			} catch (e) {
 				renderError(e,element);
 				return;
 			}
 
-			const createdElements: JSXElement[] = [];
-
 			if (graphInfo.elements != undefined) {
 				// add every element to the graph 
 				for (let i = 0; i < graphInfo.elements.length; i++) {
 					try {
-						this.utils.addElement(board, graphInfo.elements[i], createdElements);
+						this.utils.addElement(graph, graphInfo.elements[i]);
 					} catch (e) {
 						renderError(e,element);
 						return;
