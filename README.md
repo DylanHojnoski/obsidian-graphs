@@ -10,8 +10,10 @@ If you have a cool graph that helps show the capabilities of this plugin please 
 ## Features
 
 * Built in graph types (circle, derivative, vector fields, etc.)
-* complex mathematical function support
+* Complex mathematical function support
 * Interactable
+* 3D graphs
+* Syntax highlighting
 * Obsidian theme support
 
 ## Installation
