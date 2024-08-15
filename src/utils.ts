@@ -215,7 +215,7 @@ export class Utils {
 			const index = Number.parseInt(item.substring(1,item.length));
 
 			// checks if it is a valid element
-			if (index >= createdElements.length) {
+			if (index >= createdElements.length || index < 0) {
 				throw new SyntaxError("Element has invalid composed element.");
 			}
 
@@ -226,7 +226,6 @@ export class Utils {
 
 	private checkComposedAtts(att: Attributes | Att3d, createdElements: JSXElement[]) {
 		if (att != undefined) {
-			this.validateAtt(att as Attributes, createdElements);
 			for (const key of Object.keys(att)) {
 				//@ts-ignore
 				if (typeof att[key] === 'object') {
@@ -234,6 +233,7 @@ export class Utils {
 					this.checkComposedAtts(att[key], createdElements);
 				}
 			}
+			this.validateAtt(att as Attributes, createdElements);
 		}
 
 	}
