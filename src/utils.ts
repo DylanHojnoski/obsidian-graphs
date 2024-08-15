@@ -99,8 +99,8 @@ export class Utils {
 
 			const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
 			const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
-			const xMin = graphInfo.bounds[0] <= 0 ? graphInfo.bounds[0] + xLength*0.15 : graphInfo.bounds[0] - xLength*0.15; 
-			const yMin = graphInfo.bounds[3] <= 0 ? graphInfo.bounds[3] + yLength*0.15 : graphInfo.bounds[3] - yLength*0.15; 
+			const xMin = graphInfo.bounds[0] + xLength*0.15; 
+			const yMin = graphInfo.bounds[3] + yLength*0.15; 
 
 			const element: ElementInfo = {
 				type: "view3d",
