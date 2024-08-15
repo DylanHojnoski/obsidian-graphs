@@ -63,11 +63,52 @@ JXG.themes['obsidian'] = {
 			gradient: "linear",
 			gradientSecondColor: "var(--color-base-50)",
 		},
+		xPlaneFrontYAxis: {
+			strokeColor: textNormal,
+		},
+		xPlaneFrontZAxis: {
+			strokeColor: textNormal,
+		},
+		yPlaneFrontXAxis: {
+			strokeColor: textNormal,
+		},
+		yPlaneFrontZAxis: {
+			strokeColor: textNormal,
+		},
+		zPlaneFrontXAxis: {
+			strokeColor: textNormal,
+		},
+		zPlaneFrontYAxis: {
+			strokeColor: textNormal,
+		},
+
+		xPlaneRearYAxis: {
+			strokeColor: textNormal,
+		}, 
+		xPlaneRearZAxis:  {
+			strokeColor: textNormal,
+		},
+		yPlaneRearXAxis:  {
+			strokeColor: textNormal,
+		},
+		yPlaneRearZAxis:  {
+			strokeColor: textNormal,
+		},
+		zPlaneRearXAxis: {
+			strokeColor: textNormal,
+		},
+		zPlaneRearYAxis: {
+			strokeColor: textNormal,
+		},
 	},
 
 	mesh3d: {
 		strokeColor: textNormal,
 		fillColor: textNormal,
+	},
+
+	axis3d: {
+		strokeColor: textNormal,
 	},
 
 	point3d: {
