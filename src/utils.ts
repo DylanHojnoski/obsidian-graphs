@@ -110,10 +110,10 @@ export class Utils {
 
 
 			if (graphInfo.att3d == undefined) {
-				graph.view3d = board.create("view3d", [[xMin, yMin], [xLength-xLength*0.3, yLength-yLength*0.3], graphInfo.bounds3d])
+				graph.view3d = board.create("view3d", element.def);
 			}
 			else {
-				this.checkComposedAtts(graphInfo.att3d, graph.createdElements);
+				this.checkComposedAtts(element.att as Att3d, graph.createdElements);
 				//@ts-ignore
 				graph.view3d = board.create(element.type, element.def, element.att);
 			}

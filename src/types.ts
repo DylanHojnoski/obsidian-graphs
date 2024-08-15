@@ -36,6 +36,7 @@ export interface GraphInfo {
 }
 	export interface Att3d {
 		axisPosition: string,
+		projection: string,
 
 		xAxis: Attributes ,
 		xPlaneFront: Attributes,
