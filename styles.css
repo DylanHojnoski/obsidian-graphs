@@ -12,13 +12,18 @@
 	max-width: var(--graph-width);
     background-color: var(--background-secondary);
     border-style: solid;
-    border-width: 1px;
+    border-width: var(--border-width);
     border-color: var(--background-modifier-border);
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
+    border-radius: var(--radius-m);
+    -webkit-border-radius: var(--radius-m);
     margin: var(--graph-alignment);
+	-webkit-touch-action: none;
     -ms-touch-action: none;
     /* "touch-action: none;" is set with JavaScript. */
+}
+
+.jxgbox:hover {
+    border-color: var(--background-modifier-border-focus);
 }
 
 .jxgbox svg text {

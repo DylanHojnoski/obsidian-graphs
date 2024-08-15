@@ -99,8 +99,8 @@ export class Utils {
 
 			const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
 			const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
-			const xMin = graphInfo.bounds[0] <= 0 ? graphInfo.bounds[0] + xLength*0.15 : graphInfo.bounds[0] - xLength*0.15; 
-			const yMin = graphInfo.bounds[3] <= 0 ? graphInfo.bounds[3] + yLength*0.15 : graphInfo.bounds[3] - yLength*0.15; 
+			const xMin = graphInfo.bounds[0] + xLength*0.15; 
+			const yMin = graphInfo.bounds[3] + yLength*0.15; 
 
 			const element: ElementInfo = {
 				type: "view3d",
@@ -110,10 +110,10 @@ export class Utils {
 
 
 			if (graphInfo.att3d == undefined) {
-				graph.view3d = board.create("view3d", [[xMin, yMin], [xLength-xLength*0.3, yLength-yLength*0.3], graphInfo.bounds3d])
+				graph.view3d = board.create("view3d", element.def);
 			}
 			else {
-				this.checkComposedAtts(graphInfo.att3d, graph.createdElements);
+				this.checkComposedAtts(element.att as Att3d, graph.createdElements);
 				//@ts-ignore
 				graph.view3d = board.create(element.type, element.def, element.att);
 			}

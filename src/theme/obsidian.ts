@@ -34,14 +34,40 @@ JXG.themes['obsidian'] = {
 			strokeColor: "var(--color-blue)",
 		},
 		xPlaneRear: {
-			fillColor: textMuted,
+			fillColor: "var(--color-base-00)",
+			gradient: "linear",
+			gradientSecondColor: "var(--color-base-50)",
+		},
+		xPlaneFront: {
+			fillColor: "var(--color-base-00)",
+			gradient: "linear",
+			gradientSecondColor: "var(--color-base-50)",
 		},
 		yPlaneRear: {
-			fillColor: textMuted,
+			fillColor: "var(--color-base-00)",
+			gradient: "linear",
+			gradientSecondColor: "var(--color-base-50)",
+		},
+		yPlaneFront: {
+			fillColor: "var(--color-base-00)",
+			gradient: "linear",
+			gradientSecondColor: "var(--color-base-50)",
 		},
 		zPlaneRear: {
-			fillColor: textMuted,
+			fillColor: "var(--color-base-00)",
+			gradient: "linear",
+			gradientSecondColor: "var(--color-base-50)",
 		},
+		zPlaneFront: {
+			fillColor: "var(--color-base-00)",
+			gradient: "linear",
+			gradientSecondColor: "var(--color-base-50)",
+		},
+	},
+
+	mesh3d: {
+		strokeColor: textNormal,
+		fillColor: textNormal,
 	},
 
 	point3d: {
