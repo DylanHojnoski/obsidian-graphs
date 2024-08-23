@@ -190,21 +190,24 @@ export class Utils {
 			throw new SyntaxError("Element " + createdElements.length + " def is not defined");
 		}
 
-		this.validateDef(element.def, createdElements);
+		this.validateDef(element.def, element.type, createdElements);
 		this.checkComposedAtts(element.att as Attributes, createdElements);
 	}
 
-	private validateDef(def: any[], createdElements: JSXElement[]) {
+	private validateDef(def: any[], type: string, createdElements: JSXElement[]) {
 		for (let i = 0; i < def.length; i++) {
+			if (def[i] == undefined) {
+				return;
+			}
 			if (Array.isArray(def[i])) {
-				this.validateDef(def[i], createdElements);
+				this.validateDef(def[i], type, createdElements);
 			}
 
 			const index = this.checkComposedElements(def[i], createdElements);
 			if (index >= 0) {
 				def[i] = createdElements[index].element;
 			}
-			def[i] = this.checkFunction(def[i], createdElements);
+			def[i] = this.checkFunction(def[i], type, createdElements);
 		}
 	}
 
@@ -280,10 +283,10 @@ export class Utils {
 				return "var(--color-pink)";
 			default:
 				return value;
-		}
+	}
 	}
 
-	private checkFunction(item: any, createdElements: JSXElement[]): any {
+	private checkFunction(item: any, type: String, createdElements: JSXElement[]): any {
 		// regex to check if it is the start of a function
 		const f = RegExp("f:")
 
@@ -313,9 +316,22 @@ export class Utils {
 			}
 
 			const equation = item;
+			const functionParams = [];
+			if (type == Types.ParametricSurface3D) {
+				functionParams.push("u");
+				functionParams.push("v");
+			}
+			else if (type == Types.Curve3D) {
+				functionParams.push("u");
+			}
+			else {
+				functionParams.push("x");
+				functionParams.push("y");
+				functionParams.push("z");
+			}
 
 			// create function that is used to calculate the values
-			return  new Function(...this.argsArray, "createdElements", "x", "y", "z", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
+			return  new Function(...this.argsArray, "createdElements", ...functionParams, "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
 	}
