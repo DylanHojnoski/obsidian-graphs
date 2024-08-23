@@ -21,6 +21,15 @@ export default class ObsidianGraphs extends Plugin {
 
 		await loadMathJax();
 
+		this.addCommand({
+			id: "export-graph",
+			name: "Export graph",
+			callback: () => {
+			//@ts-ignore
+				this.utils.exportGraph(this.app, boards["jxgBoard1"]);
+			},
+		});
+
 		//@ts-ignore
 		if (typeof MathJax !== "undefined") {
 			//@ts-ignore

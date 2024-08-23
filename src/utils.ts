@@ -1,5 +1,5 @@
 import { Board, JSXGraph, GeometryElement, View3D } from "jsxgraph";
-import { parseYaml } from "obsidian";
+import { App, parseYaml } from "obsidian";
 import { Att3d, Attributes, ElementInfo, Graph, GraphInfo, JSXElement, Types } from "./types";
 
 export class Utils {
@@ -318,6 +318,20 @@ export class Utils {
 			return  new Function(...this.argsArray, "createdElements", "x", "y", "z", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
+	}
+
+	exportGraph(app: App, graph: Board) {
+		const text = graph.renderer.dumpToDataURI();
+		const ar = text.split(",");
+		let  decoded =  decodeURIComponent(escape(atob(ar[1])));
+		const re  = RegExp(/var\(\s*(--[\w-]+)\s*\)/g);
+		let matches = re.exec(decoded);
+		while (matches != null) {
+				decoded = decoded.replace(matches[0], document.body.getCssPropertyValue(matches[1]));
+				matches = re.exec(decoded);
+		}
+
+		app.vault.create("./test.svg", decoded);
 	}
 }
 
