@@ -8,7 +8,6 @@ import { Utils } from 'src/utils';
 
 export default class ObsidianGraphs extends Plugin {
 	settings: ObsidianGraphsSettings
-	currentFileName: string;
 	count = 0;
 	utils: Utils = new Utils();
 
@@ -42,12 +41,6 @@ export default class ObsidianGraphs extends Plugin {
 		})
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
-			const currentFile = this.app.workspace.getActiveFile();
-			if (currentFile) {
-				this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
-				this.currentFileName = this.currentFileName.replace(/\s/g, "");
-			}
-
 			let graphInfo: GraphInfo;
 
 			try {
@@ -61,16 +54,10 @@ export default class ObsidianGraphs extends Plugin {
 			let graph: Graph;
 
 			// if the current file name is undefined need to get the current file
-			if (this.currentFileName == undefined) {
-				const currentFile = this.app.workspace.getActiveFile();
-				if (currentFile) {
-					this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
-					this.currentFileName = this.currentFileName.replace(/\s/g, "");
-				}
-			}
+			const currentFileName = this.getCurrentFileName();
 
 			// create the div that contains the board
-			const graphDiv = element.createEl("div", {cls: "jxgbox " + this.currentFileName});
+			const graphDiv = element.createEl("div", {cls: "jxgbox " + currentFileName});
 			graphDiv.id = "graph" + this.count;
 			this.count++;
 
@@ -120,13 +107,17 @@ export default class ObsidianGraphs extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	cullBoards() {
+	getCurrentFileName(): string {
+		let currentFileName = "";
 		const currentFile = this.app.workspace.getActiveFile();
 		if (currentFile) {
-			this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
-			this.currentFileName = this.currentFileName.replace(/\s/g, "");
+			currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
+			currentFileName = currentFileName.replace(/\s/g, "");
 		}
+		return currentFileName;
+	}
 
+	cullBoards() {
 		// get the active files
 		const activeFileNames: string[] = [];
 		const files = this.app.workspace.getLeavesOfType("markdown");
