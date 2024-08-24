@@ -316,18 +316,15 @@ export class Utils {
 			}
 
 			const equation = item;
-			const functionParams = [];
+			let functionParams = [];
 			if (type == Types.ParametricSurface3D) {
-				functionParams.push("u");
-				functionParams.push("v");
+				functionParams = ["u", "v"];
 			}
 			else if (type == Types.Curve3D) {
-				functionParams.push("u");
+				functionParams = ["u"];
 			}
 			else {
-				functionParams.push("x");
-				functionParams.push("y");
-				functionParams.push("z");
+				functionParams = ["x", "y", "z"];
 			}
 
 			// create function that is used to calculate the values
