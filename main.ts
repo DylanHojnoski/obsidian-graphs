@@ -25,9 +25,25 @@ export default class ObsidianGraphs extends Plugin {
 			id: "export-graph",
 			name: "Export graph",
 			callback: () => {
-			//@ts-ignore
-				this.utils.exportGraph(this.app, boards["jxgBoard1"]);
-			},
+				//@ts-ignore
+				for (const key in boards) {
+					let active = false;
+					//@ts-ignore
+					const div: HTMLElement = boards[key].containerObj;
+
+					// check the if it is in the active files
+					if (div.hasClass(this.currentFileName)) {
+						active = true;
+					}
+
+					// it is not in active files so delete
+					if (active) {
+						//@ts-ignore
+						const svgData = this.utils.exportGraph(boards[key]);
+						this.app.vault.create(this.currentFileName + "-" + div.id + ".svg", svgData);
+					}
+				}
+			}
 		});
 
 		//@ts-ignore

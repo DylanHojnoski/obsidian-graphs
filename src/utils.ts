@@ -79,6 +79,7 @@ export class Utils {
 													axis: graphInfo.axis,
 													showNavigation: graphInfo.showNavigation,
 													defaultAxes: graphInfo.defaultAxes,
+													showScreenshot: true,
 													//@ts-ignore
 													theme: 'obsidian',
 													keepAspectRatio: graphInfo.keepAspectRatio});
@@ -320,7 +321,7 @@ export class Utils {
 		return item;
 	}
 
-	exportGraph(app: App, graph: Board) {
+	exportGraph(graph: Board) {
 		const text = graph.renderer.dumpToDataURI();
 		const ar = text.split(",");
 		let  decoded =  decodeURIComponent(escape(atob(ar[1])));
@@ -331,7 +332,12 @@ export class Utils {
 				matches = re.exec(decoded);
 		}
 
-		app.vault.create("./test.svg", decoded);
+		const insertPosition = decoded.indexOf(">")+1;
+		const begining = decoded.slice(0, insertPosition);
+		const ending = decoded.slice(insertPosition);
+		decoded = begining + "<style>.JXG_navigation {display: none;}</style>" + ending;
+
+		return decoded;
 	}
 }
 
