@@ -34,44 +34,19 @@ export default class ObsidianGraphs extends Plugin {
 		}
 
 		this.app.workspace.on("file-open" , () => {
+			this.cullBoards();
+		});
 
+		this.app.workspace.on("window-close", () => {
+			this.cullBoards();
+		})
+
+		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
 			const currentFile = this.app.workspace.getActiveFile();
 			if (currentFile) {
 				this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
 				this.currentFileName = this.currentFileName.replace(/\s/g, "");
 			}
-
-			// get the active files
-			const activeFileNames: string[] = [];
-			const files = this.app.workspace.getLeavesOfType("markdown");
-			files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
-
-			// go through all the boards and delete ones that are not in active files
-			//@ts-ignore
-			for (const key in boards) {
-				let active = false;
-				//@ts-ignore
-				const div = boards[key].containerObj;
-
-				// check the if it is in the active files
-				for (const name of activeFileNames) {
-					if (div.hasClass(name)) {
-						active = true;
-						break;
-					}
-				}
-
-				// it is not in active files so delete
-				if (!active) {
-					//@ts-ignore
-					boards[key].containerObj.remove();
-					//@ts-ignore
-					JSXGraph.freeBoard(boards[key]);
-				}
-			}
-		});
-
-		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
 
 			let graphInfo: GraphInfo;
 
@@ -118,6 +93,7 @@ export default class ObsidianGraphs extends Plugin {
 					}
 				}
 			}
+
 		});
 	}
 
@@ -142,5 +118,42 @@ export default class ObsidianGraphs extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	cullBoards() {
+		const currentFile = this.app.workspace.getActiveFile();
+		if (currentFile) {
+			this.currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
+			this.currentFileName = this.currentFileName.replace(/\s/g, "");
+		}
+
+		// get the active files
+		const activeFileNames: string[] = [];
+		const files = this.app.workspace.getLeavesOfType("markdown");
+		files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
+
+		// go through all the boards and delete ones that are not in active files
+		//@ts-ignore
+		for (const key in boards) {
+			let active = false;
+			//@ts-ignore
+			const div = boards[key].containerObj;
+
+			// check the if it is in the active files
+			for (const name of activeFileNames) {
+				if (div.hasClass(name)) {
+					active = true;
+					break;
+				}
+			}
+
+			// it is not in active files so delete
+			if (!active) {
+				//@ts-ignore
+				boards[key].containerObj.remove();
+				//@ts-ignore
+				JSXGraph.freeBoard(boards[key]);
+			}
+		}
 	}
 }
