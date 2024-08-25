@@ -4,6 +4,25 @@
 	--graph-alignment: 0 auto;
 }
 
+.exportGraph {
+	display: flex;
+	flex-direction: column;
+	border-top: var(--border-width) solid var(--background-modifier-border);
+}
+
+.exportGraph svg {
+	margin: 10px auto;
+}
+
+.exportGraphSettings {
+	display: flex;
+	flex-direction: column;
+}
+
+.exportSettingButton {
+	border-width: 0px;
+}
+
 .jxgbox {
     /* for IE 7 */
     position: relative;
@@ -183,3 +202,4 @@
     border-color: #f0e442;
     padding: 1px 7px 1px 7px;
 }
+

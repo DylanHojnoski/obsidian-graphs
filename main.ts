@@ -5,6 +5,7 @@ import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
+import { ExportModal } from 'src/ExportModal';
 
 export default class ObsidianGraphs extends Plugin {
 	settings: ObsidianGraphsSettings
@@ -19,31 +20,6 @@ export default class ObsidianGraphs extends Plugin {
 		window.CodeMirror.defineMode("graph", config => window.CodeMirror.getMode(config, "javascript"));
 
 		await loadMathJax();
-
-		this.addCommand({
-			id: "export-graph",
-			name: "Export graph",
-			callback: () => {
-				//@ts-ignore
-				for (const key in boards) {
-					let active = false;
-					//@ts-ignore
-					const div: HTMLElement = boards[key].containerObj;
-
-					// check the if it is in the active files
-					if (div.hasClass(this.currentFileName)) {
-						active = true;
-					}
-
-					// it is not in active files so delete
-					if (active) {
-						//@ts-ignore
-						const svgData = this.utils.exportGraph(boards[key]);
-						this.app.vault.create(this.currentFileName + "-" + div.id + ".svg", svgData);
-					}
-				}
-			}
-		});
 
 		//@ts-ignore
 		if (typeof MathJax !== "undefined") {
@@ -64,6 +40,33 @@ export default class ObsidianGraphs extends Plugin {
 		this.app.workspace.on("window-close", () => {
 			this.cullBoards();
 		})
+
+		this.addCommand({
+			id: "export-graphs",
+			name: "Export graphs",
+			callback: () => {
+				const svgs = [];
+				//@ts-ignore
+				for (const key in boards) {
+					let active = false;
+					//@ts-ignore
+					const div: HTMLElement = boards[key].containerObj;
+
+					// check the if it is in the active files
+					if (div.hasClass(this.getCurrentFileName())) {
+						active = true;
+					}
+
+					// it is not in active files so delete
+					if (active) {
+						//@ts-ignore
+						const svgData = this.utils.exportGraph(boards[key]);
+						svgs.push(svgData);
+					}
+				}
+				new ExportModal(this, svgs).open();
+			}
+		});
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
 			let graphInfo: GraphInfo;
@@ -86,6 +89,7 @@ export default class ObsidianGraphs extends Plugin {
 			graphDiv.id = "graph" + this.count;
 			this.count++;
 
+
 			try {
 				// create the board
 				graph = this.utils.createBoard(graphDiv, graphInfo);
@@ -105,7 +109,6 @@ export default class ObsidianGraphs extends Plugin {
 					}
 				}
 			}
-
 		});
 	}
 

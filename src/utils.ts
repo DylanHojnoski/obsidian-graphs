@@ -79,7 +79,6 @@ export class Utils {
 													axis: graphInfo.axis,
 													showNavigation: graphInfo.showNavigation,
 													defaultAxes: graphInfo.defaultAxes,
-													showScreenshot: true,
 													//@ts-ignore
 													theme: 'obsidian',
 													keepAspectRatio: graphInfo.keepAspectRatio});
