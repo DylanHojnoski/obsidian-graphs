@@ -1,10 +1,12 @@
 import ObsidianGraphs from "main";
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, debounce, PluginSettingTab, Setting } from "obsidian";
+import { LocationSuggester } from "./LocationSuggester";
 
 export interface ObsidianGraphsSettings {
 	height: number;
 	width: number;
 	alignment: string;
+	defaultExportLocation: string;
 }
 
 enum Alignment {
@@ -17,6 +19,7 @@ export const DEFAULT_SETTINGS: Partial<ObsidianGraphsSettings> = {
 	height: 300,
 	width: 700,
 	alignment: Alignment.center,
+	defaultExportLocation: "",
 };
 
 export class ObsidianGraphsSettingsTab extends PluginSettingTab {
@@ -31,6 +34,16 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
+
+		new Setting(this.containerEl).setName("Default export location").addSearch((search) => {
+			new LocationSuggester(this.app, search.inputEl);
+			search.setPlaceholder("Default is vault root")
+			.setValue(this.plugin.settings.defaultExportLocation)
+			.onChange(debounce(async (path) => {
+				this.plugin.settings.defaultExportLocation = path;
+				await this.plugin.saveSettings();
+			}))
+		});
 
 		new Setting(this.containerEl)
 		.setName("Height")
@@ -75,6 +88,5 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			});
-
-		}
+	}
 }
