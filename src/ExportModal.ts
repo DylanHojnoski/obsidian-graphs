@@ -18,7 +18,12 @@ export class ExportModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
+		if (contentEl.parentElement != undefined) {
+			contentEl.parentElement.addClass("exportGraphModal");
+		}
+
 		contentEl.createEl("h1", { text: "Export Graphs" });
+		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in the file."})
 
 		const settings = contentEl.createDiv();
 
@@ -35,7 +40,6 @@ export class ExportModal extends Modal {
 			container.addClass("exportGraph");
  
 			container.createEl("h1", { text: "Graph " + i});
-
 
 			let fileName = this.plugin.getCurrentFileName() + "-graph-" + i;
 			container.innerHTML += this.svgs[i];

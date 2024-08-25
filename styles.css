@@ -4,6 +4,17 @@
 	--graph-alignment: 0 auto;
 }
 
+.exportGraphModal {
+	width: 100%;
+}
+
+@media screen and (min-width: 560px) {
+	.exportGraphModal {
+		width: min-content;
+		min-width: var(--dialog-width);
+	}
+} 
+
 .exportGraph {
 	display: flex;
 	flex-direction: column;
