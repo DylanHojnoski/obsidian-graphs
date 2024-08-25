@@ -1,5 +1,6 @@
 import ObsidianGraphs from "main";
-import {  Modal, Setting } from "obsidian";
+import {  debounce, Modal, Notice, Setting } from "obsidian";
+import { LocationSuggester } from "./LocationSuggester";
 
 export class ExportModal extends Modal {
 	plugin: ObsidianGraphs;
@@ -17,16 +18,17 @@ export class ExportModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		// Header
 		contentEl.createEl("h1", { text: "Export Graphs" });
 
 		const settings = contentEl.createDiv();
 
-		new Setting(settings).setName("Location").addText((text) => {
-			text.onChange(async (value) => {
-				this.saveLocation = value;
-			}).setPlaceholder("Default is vault home folder");
-		});
+		new Setting(settings).setName("Location").addSearch((search) => {
+			new LocationSuggester(this.app, search.inputEl);
+			search.setPlaceholder("Default is vault home folder")
+			.onChange(debounce(async (path) => {
+				this.saveLocation = path;
+			}))
+		})
 
 		for (let i = 0; i < this.svgs.length; i++) {
 			const container = settings.createDiv();
@@ -57,18 +59,23 @@ export class ExportModal extends Modal {
 				.setButtonText("Export")
 				.setCta()
 				.onClick(async () => {
-					if (this.saveLocation.at(this.saveLocation.length-1) != "/") {
-						this.saveLocation = this.saveLocation + "/";
-
+					if (this.saveLocation.length > 1 && this.saveLocation.at(this.saveLocation.length-1) != "/") {
+						this.saveLocation += "/";
 					}
-					this.app.vault.create(this.saveLocation + fileName + ".svg", this.svgs[i]);
+					else if (this.saveLocation == "/") {
+						this.saveLocation = "";
+					}
+
+					const path = this.saveLocation + fileName + ".svg";
+					const file = this.app.vault.getFileByPath(path);
+					if (!file) {
+						this.app.vault.create(path, this.svgs[i]);
+					}
+					else {
+						new Notice("File \"" + path + "\" already exists", 5000);
+					}
 				});
-
-				btn.buttonEl.style.borderTopWidth = "0p";
 			});
-
-
 		}
 	}
-
 }
