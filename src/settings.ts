@@ -7,6 +7,7 @@ export interface ObsidianGraphsSettings {
 	width: number;
 	alignment: string;
 	defaultExportLocation: string;
+	transparentBackground: boolean;
 }
 
 enum Alignment {
@@ -20,6 +21,7 @@ export const DEFAULT_SETTINGS: Partial<ObsidianGraphsSettings> = {
 	width: 700,
 	alignment: Alignment.center,
 	defaultExportLocation: "",
+	transparentBackground: false,
 };
 
 export class ObsidianGraphsSettingsTab extends PluginSettingTab {
@@ -43,6 +45,15 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 				this.plugin.settings.defaultExportLocation = path;
 				await this.plugin.saveSettings();
 			}))
+		});
+
+		new Setting(this.containerEl).setName("Transparent export background")
+		.addToggle((toggle) => {
+			toggle.setValue(this.plugin.settings.transparentBackground)
+			.onChange(async (value) => {
+				this.plugin.settings.transparentBackground = value;
+				await this.plugin.saveSettings();
+			})
 		});
 
 		new Setting(this.containerEl)

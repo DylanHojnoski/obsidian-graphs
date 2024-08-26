@@ -1,4 +1,4 @@
-import { loadMathJax, Plugin } from 'obsidian';
+import { loadMathJax, MarkdownView, Plugin } from 'obsidian';
 import { boards,  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { Graph, GraphInfo } from 'src/types';
@@ -46,23 +46,21 @@ export default class ObsidianGraphs extends Plugin {
 			name: "Export graphs",
 			callback: () => {
 				const svgs = [];
+				const view = this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode();
 				//@ts-ignore
 				for (const key in boards) {
-					let active = false;
 					//@ts-ignore
 					const div: HTMLElement = boards[key].containerObj;
 
 					// check the if it is in the active files
-					if (div.hasClass(this.getCurrentFileName())) {
-						active = true;
+					if (!div.hasClass(this.getCurrentFileName()) || (view == "preview" && div.hasClass("LivePreview")) || (view == "source" && !div.hasClass("LivePreview")))
+					{
+						continue;
 					}
 
-					// it is not in active files so delete
-					if (active) {
-						//@ts-ignore
-						const svgData = this.utils.exportGraph(boards[key]);
-						svgs.push(svgData);
-					}
+					//@ts-ignore
+					const svgData = this.utils.exportGraph(boards[key], this.settings.transparentBackground);
+					svgs.push(svgData);
 				}
 				new ExportModal(this, svgs).open();
 			}
@@ -86,6 +84,11 @@ export default class ObsidianGraphs extends Plugin {
 
 			// create the div that contains the board
 			const graphDiv = element.createEl("div", {cls: "jxgbox " + currentFileName});
+
+			if (this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode() == "source") {
+				graphDiv.addClass("LivePreview");
+			}
+
 			graphDiv.id = "graph" + this.count;
 			this.count++;
 

@@ -320,7 +320,7 @@ export class Utils {
 		return item;
 	}
 
-	exportGraph(graph: Board) {
+	exportGraph(graph: Board, transparentBackground: boolean) {
 		const text = graph.renderer.dumpToDataURI();
 		const ar = text.split(",");
 		let  decoded =  decodeURIComponent(escape(atob(ar[1])));
@@ -334,7 +334,14 @@ export class Utils {
 		const insertPosition = decoded.indexOf(">")+1;
 		const begining = decoded.slice(0, insertPosition);
 		const ending = decoded.slice(insertPosition);
-		decoded = begining + "<style>.JXG_navigation {display: none;}</style>" + ending;
+		let style = ""
+		if (transparentBackground) {
+			style = "<style>.JXG_navigation {display: none;}</style>";
+		}
+		else {
+			style = "<style>.JXG_navigation {display: none;} svg { background-color: " + document.body.getCssPropertyValue("--background-secondary") + "}</style>";
+		}
+		decoded = begining + style + ending;
 
 		return decoded;
 	}
