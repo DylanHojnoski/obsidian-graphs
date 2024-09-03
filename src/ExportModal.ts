@@ -35,7 +35,7 @@ export class ExportModal extends Modal {
 		}
 
 		contentEl.createEl("h1", { text: "Export Graphs" });
-		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading or live preview mode."})
+		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading mode."})
 		contentEl.createEl("p", {text: "Graphs will no longer be interactable or adapt colors to Obsidian theme."}).style.color = "var(--text-faint)"
 
 		const settings = contentEl.createDiv();
