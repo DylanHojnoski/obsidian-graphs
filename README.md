@@ -79,6 +79,8 @@ If you find any bugs with this plugin please create a new issue so that they can
 
 If you want to contribute please create an issue or pull request.
 
+You can suggest changes to the wiki by editing the files in the `wiki` folder and submiting a pull request.
+
 ## Attribution
 
 This plugin uses 
