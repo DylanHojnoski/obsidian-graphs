@@ -55,12 +55,10 @@ export default class ObsidianGraphs extends Plugin {
 							const div: HTMLElement = boards[key].containerObj;
 
 							// check the if it is in the active files
-							if (!div.hasClass(this.getCurrentFileName()) || div.hasClass("LivePreview")) {
-								continue;
+							if (div.hasClass(this.getCurrentFileName()) && !div.hasClass("LivePreview")) {
+								//@ts-ignore
+								graphs.push(boards[key]);
 							}
-
-							//@ts-ignore
-							graphs.push(boards[key]);
 						}
 						new ExportModal(this, graphs).open();
 					}
@@ -95,7 +93,6 @@ export default class ObsidianGraphs extends Plugin {
 
 			graphDiv.id = "graph" + this.count;
 			this.count++;
-
 
 			try {
 				// create the board

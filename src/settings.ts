@@ -37,24 +37,7 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		new Setting(this.containerEl).setName("Default export location").addSearch((search) => {
-			new LocationSuggester(this.app, search.inputEl);
-			search.setPlaceholder("Default is vault root")
-			.setValue(this.plugin.settings.defaultExportLocation)
-			.onChange(debounce(async (path) => {
-				this.plugin.settings.defaultExportLocation = path;
-				await this.plugin.saveSettings();
-			}))
-		});
-
-		new Setting(this.containerEl).setName("Transparent export background")
-		.addToggle((toggle) => {
-			toggle.setValue(this.plugin.settings.transparentBackground)
-			.onChange(async (value) => {
-				this.plugin.settings.transparentBackground = value;
-				await this.plugin.saveSettings();
-			})
-		});
+		this.containerEl.createEl("h2", {text: "Graph Style"});
 
 		new Setting(this.containerEl)
 		.setName("Height")
@@ -99,5 +82,26 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			});
+
+		this.containerEl.createEl("h2", {text: "Export"});
+
+		new Setting(this.containerEl).setName("Default location").addSearch((search) => {
+			new LocationSuggester(this.app, search.inputEl);
+			search.setPlaceholder("Default is vault root")
+			.setValue(this.plugin.settings.defaultExportLocation)
+			.onChange(debounce(async (path) => {
+				this.plugin.settings.defaultExportLocation = path;
+				await this.plugin.saveSettings();
+			}))
+		});
+
+		new Setting(this.containerEl).setName("Transparent background")
+		.addToggle((toggle) => {
+			toggle.setValue(this.plugin.settings.transparentBackground)
+			.onChange(async (value) => {
+				this.plugin.settings.transparentBackground = value;
+				await this.plugin.saveSettings();
+			})
+		});
 	}
 }

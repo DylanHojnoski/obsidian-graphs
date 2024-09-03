@@ -38,6 +38,7 @@ export class ExportModal extends Modal {
 		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading mode."})
 		contentEl.createEl("p", {text: "Graphs will no longer be interactable or adapt colors to Obsidian theme."}).style.color = "var(--text-faint)"
 
+
 		const settings = contentEl.createDiv();
 
 		const locationInput = new Setting(settings).setName("Export location").addSearch((search) => {
@@ -86,11 +87,10 @@ export class ExportModal extends Modal {
 			});
 		});
 
-		let graphNumber = 0;
 
 		for (let i = 0; i < this.boards.length; i++) {
 			const container = settings.createDiv();
-			graphNumber++;
+			let graphNumber = this.svgs.length + 1;
 			container.addClass("exportGraph");
  
 			container.createEl("h1", { text: "Graph " + graphNumber});
@@ -110,7 +110,6 @@ export class ExportModal extends Modal {
 			}
 
 			this.svgs.push(svg);
-			const index = this.svgs.length-1;
 
 			const settingsContainer =  container.createDiv();
 			settingsContainer.addClass("exportGraphSettings");
@@ -140,7 +139,7 @@ export class ExportModal extends Modal {
 					const path = this.saveLocation + fileName + ".svg";
 					const file = this.app.vault.getFileByPath(path);
 					if (!file) {
-						this.app.vault.create(path, this.svgs[index]);
+						this.app.vault.create(path, this.svgs[graphNumber-1]);
 					}
 					else {
 						new Notice("File \"" + path + "\" already exists", 5000);
