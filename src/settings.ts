@@ -1,10 +1,13 @@
 import ObsidianGraphs from "main";
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, debounce, PluginSettingTab, Setting } from "obsidian";
+import { LocationSuggester } from "./LocationSuggester";
 
 export interface ObsidianGraphsSettings {
 	height: number;
 	width: number;
 	alignment: string;
+	defaultExportLocation: string;
+	transparentBackground: boolean;
 }
 
 enum Alignment {
@@ -17,6 +20,8 @@ export const DEFAULT_SETTINGS: Partial<ObsidianGraphsSettings> = {
 	height: 300,
 	width: 700,
 	alignment: Alignment.center,
+	defaultExportLocation: "",
+	transparentBackground: false,
 };
 
 export class ObsidianGraphsSettingsTab extends PluginSettingTab {
@@ -31,6 +36,8 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
+
+		this.containerEl.createEl("h2", {text: "Graph Style"});
 
 		new Setting(this.containerEl)
 		.setName("Height")
@@ -76,5 +83,25 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 					})
 			});
 
-		}
+		this.containerEl.createEl("h2", {text: "Export"});
+
+		new Setting(this.containerEl).setName("Default location").addSearch((search) => {
+			new LocationSuggester(this.app, search.inputEl);
+			search.setPlaceholder("Default is vault root")
+			.setValue(this.plugin.settings.defaultExportLocation)
+			.onChange(debounce(async (path) => {
+				this.plugin.settings.defaultExportLocation = path;
+				await this.plugin.saveSettings();
+			}))
+		});
+
+		new Setting(this.containerEl).setName("Transparent background")
+		.addToggle((toggle) => {
+			toggle.setValue(this.plugin.settings.transparentBackground)
+			.onChange(async (value) => {
+				this.plugin.settings.transparentBackground = value;
+				await this.plugin.saveSettings();
+			})
+		});
+	}
 }

@@ -4,6 +4,36 @@
 	--graph-alignment: 0 auto;
 }
 
+.exportGraphModal {
+	width: 100%;
+}
+
+@media screen and (min-width: 560px) {
+	.exportGraphModal {
+		width: min-content;
+		min-width: var(--dialog-width);
+	}
+} 
+
+.exportGraph {
+	display: flex;
+	flex-direction: column;
+	border-top: var(--border-width) solid var(--background-modifier-border);
+}
+
+.exportGraph svg {
+	margin: 10px auto;
+}
+
+.exportGraphSettings {
+	display: flex;
+	flex-direction: column;
+}
+
+.exportSettingButton {
+	border-width: 0px;
+}
+
 .jxgbox {
     /* for IE 7 */
     position: relative;

@@ -1,10 +1,11 @@
-import { loadMathJax, Plugin } from 'obsidian';
+import { loadMathJax, MarkdownView, Plugin } from 'obsidian';
 import { boards,  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
+import { ExportModal } from 'src/ExportModal';
 
 export default class ObsidianGraphs extends Plugin {
 	settings: ObsidianGraphsSettings
@@ -40,6 +41,33 @@ export default class ObsidianGraphs extends Plugin {
 			this.cullBoards();
 		})
 
+		this.addCommand({
+			id: "export-graphs",
+			name: "Export graphs",
+			checkCallback: (checking: boolean) => {
+				const view = this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode();
+				if (view == "preview") {
+					if (!checking) {
+						const graphs = []
+						//@ts-ignore
+						for (const key in boards) {
+							//@ts-ignore
+							const div: HTMLElement = boards[key].containerObj;
+
+							// check the if it is in the active files
+							if (div.hasClass(this.getCurrentFileName()) && !div.hasClass("LivePreview")) {
+								//@ts-ignore
+								graphs.push(boards[key]);
+							}
+						}
+						new ExportModal(this, graphs).open();
+					}
+					return true
+				}
+				return false;
+			}
+		});
+
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
 			let graphInfo: GraphInfo;
 
@@ -58,6 +86,11 @@ export default class ObsidianGraphs extends Plugin {
 
 			// create the div that contains the board
 			const graphDiv = element.createEl("div", {cls: "jxgbox " + currentFileName});
+
+			if (this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode() == "source") {
+				graphDiv.addClass("LivePreview");
+			}
+
 			graphDiv.id = "graph" + this.count;
 			this.count++;
 
@@ -80,7 +113,6 @@ export default class ObsidianGraphs extends Plugin {
 					}
 				}
 			}
-
 		});
 	}
 
