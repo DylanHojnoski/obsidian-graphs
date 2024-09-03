@@ -332,15 +332,14 @@ export class Utils {
 		}
 
 		const insertPosition = decoded.indexOf(">")+1;
-		const begining = decoded.slice(0, insertPosition);
+		let begining = decoded.slice(0, insertPosition);
 		const ending = decoded.slice(insertPosition);
-		let style = ""
-		if (transparentBackground) {
-			style = "<style>.JXG_navigation {display: none;}</style>";
+
+		if (!transparentBackground) {
+			begining = begining.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
 		}
-		else {
-			style = "<style>.JXG_navigation {display: none;} svg { background-color: " + document.body.getCssPropertyValue("--background-secondary") + "}</style>";
-		}
+
+		const  style = "<style>.JXG_navigation {display: none;}</style>"
 		decoded = begining + style + ending;
 
 		return decoded;

@@ -1,19 +1,29 @@
+import { Board } from "jsxgraph";
 import ObsidianGraphs from "main";
 import {  debounce, Modal, Notice, Setting } from "obsidian";
 import { LocationSuggester } from "./LocationSuggester";
+import { Utils } from "./utils";
 
 export class ExportModal extends Modal {
 	plugin: ObsidianGraphs;
 	svgs: string[];
 	saveLocation: string;
 	exportButtons: HTMLButtonElement[];
+	transparentBackground: boolean;
+	graphs: HTMLElement[];
+	boards: Board[];
+	utils: Utils;
 
-	constructor(plugin: ObsidianGraphs,svgs: string[]) {
+	constructor(plugin: ObsidianGraphs, boards: Board[]) {
 		super(plugin.app);
 		this.plugin = plugin
-		this.svgs = svgs;
 		this.saveLocation = this.plugin.settings.defaultExportLocation
+		this.transparentBackground = this.plugin.settings.transparentBackground;
 		this.exportButtons = [];
+		this.graphs = [];
+		this.boards = boards;
+		this.utils = new Utils();
+		this.svgs = [];
 	}
 
 	async onOpen() {
@@ -42,6 +52,28 @@ export class ExportModal extends Modal {
 		locationInput.settingEl.style.borderTop = "1px solid var(--background-modifier-border)";
 		locationInput.settingEl.style.paddingTop = "0.75em";
 
+		new Setting(settings).setName("Transparent background")
+		.addToggle((toggle) => {
+			toggle
+			.setValue(this.transparentBackground)
+			.onChange(async (value) => {
+				this.transparentBackground = value;
+
+				for (let i = 0; i < this.graphs.length; i++) {
+					const svg = this.graphs[i].getElementsByTagName("svg").item(0);
+
+					if (svg) {
+						if (this.transparentBackground) {
+							svg.style.backgroundColor = "transparent";
+						}
+						else {
+							svg.style.backgroundColor = document.body.getCssPropertyValue("--background-secondary").toString();
+						} 
+					}
+				}
+			})
+		})
+
 		new Setting(settings)
 		.addButton((btn) => {
 			btn
@@ -54,18 +86,31 @@ export class ExportModal extends Modal {
 			});
 		});
 
-		for (let i = 0; i < this.svgs.length; i++) {
+		let graphNumber = 0;
+
+		for (let i = 0; i < this.boards.length; i++) {
 			const container = settings.createDiv();
+			graphNumber++;
 			container.addClass("exportGraph");
  
-			container.createEl("h1", { text: "Graph " + i});
+			container.createEl("h1", { text: "Graph " + graphNumber});
  
-			let fileName = this.plugin.getCurrentFileName() + "-graph-" + i;
-			container.innerHTML += this.svgs[i];
-			if (container.lastElementChild?.getBoundingClientRect().width == 0) {
+			let fileName = this.plugin.getCurrentFileName() + "-graph-" + graphNumber;
+
+			const svgContainer = container.createDiv();
+			svgContainer.empty();
+			svgContainer.addClass("svgContainer");
+			const svg = this.utils.exportGraph(this.boards[i], this.transparentBackground);
+			svgContainer.innerHTML = svg;
+
+			if (svgContainer.firstElementChild?.getAttribute("width") == "0") {
+				graphNumber--;
 				container.remove();
 				continue;
 			}
+
+			this.svgs.push(svg);
+			const index = this.svgs.length-1;
 
 			const settingsContainer =  container.createDiv();
 			settingsContainer.addClass("exportGraphSettings");
@@ -95,7 +140,7 @@ export class ExportModal extends Modal {
 					const path = this.saveLocation + fileName + ".svg";
 					const file = this.app.vault.getFileByPath(path);
 					if (!file) {
-						this.app.vault.create(path, this.svgs[i]);
+						this.app.vault.create(path, this.svgs[index]);
 					}
 					else {
 						new Notice("File \"" + path + "\" already exists", 5000);
@@ -103,6 +148,7 @@ export class ExportModal extends Modal {
 
 				});
 				this.exportButtons.push(btn.buttonEl);
+				this.graphs.push(container);
 			});
 		}
 	}

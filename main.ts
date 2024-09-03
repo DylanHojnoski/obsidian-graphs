@@ -44,25 +44,29 @@ export default class ObsidianGraphs extends Plugin {
 		this.addCommand({
 			id: "export-graphs",
 			name: "Export graphs",
-			callback: () => {
-				const svgs = [];
+			checkCallback: (checking: boolean) => {
 				const view = this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode();
-				//@ts-ignore
-				for (const key in boards) {
-					//@ts-ignore
-					const div: HTMLElement = boards[key].containerObj;
+				if (view == "preview") {
+					if (!checking) {
+						const graphs = []
+						//@ts-ignore
+						for (const key in boards) {
+							//@ts-ignore
+							const div: HTMLElement = boards[key].containerObj;
 
-					// check the if it is in the active files
-					if (!div.hasClass(this.getCurrentFileName()) || (view == "preview" && div.hasClass("LivePreview")) || (view == "source" && !div.hasClass("LivePreview")))
-					{
-						continue;
+							// check the if it is in the active files
+							if (!div.hasClass(this.getCurrentFileName()) || div.hasClass("LivePreview")) {
+								continue;
+							}
+
+							//@ts-ignore
+							graphs.push(boards[key]);
+						}
+						new ExportModal(this, graphs).open();
 					}
-
-					//@ts-ignore
-					const svgData = this.utils.exportGraph(boards[key], this.settings.transparentBackground);
-					svgs.push(svgData);
+					return true
 				}
-				new ExportModal(this, svgs).open();
+				return false;
 			}
 		});
 
