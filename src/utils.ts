@@ -1,5 +1,5 @@
 import { Board, JSXGraph, GeometryElement, View3D } from "jsxgraph";
-import { App, parseYaml } from "obsidian";
+import { parseYaml } from "obsidian";
 import { Att3d, Attributes, ElementInfo, Graph, GraphInfo, JSXElement, Types } from "./types";
 
 export class Utils {
@@ -286,15 +286,17 @@ export class Utils {
 	}
 	}
 
-	private checkFunction(item: any, type: String, createdElements: JSXElement[]): any {
+	private checkFunction(item: any, type: string, createdElements: JSXElement[]): any {
 		// regex to check if it is the start of a function
-		const f = RegExp("f:")
+		const f = RegExp(/f:|f\(([^,]*)?(?:,([^,]*)?(?:,([^,]*))?)?\):/g)
+		const func = f.exec(item);
+		console.log(func);
 
 		// if the def is a string and passes regex crreate the function
-		if (typeof item === 'string' && f.test(item)) {
+		if (typeof item === 'string' && func != undefined && func.length > 0) {
 			// regex to check if function contains an element
 			const re = RegExp(/e[0-9]+/);
-			item = item.replace(f, "")
+			item = item.replace(func[0], "")
 
 			// function uses composed elements
 			if (typeof item === 'string' && re.test(item)) {
@@ -316,14 +318,18 @@ export class Utils {
 			}
 
 			const equation = item;
+
 			let functionParams = [];
-			if (type == Types.ParametricSurface3D) {
-				functionParams = ["u", "v"];
+			for (let i = 1; i < func.length; i++) {
+				if (func[i] == undefined)  {
+					break;
+				}
+				else {
+					functionParams.push(func[i]);
+				}
 			}
-			else if (type == Types.Curve3D) {
-				functionParams = ["u"];
-			}
-			else {
+
+			if (functionParams.length == 0) {
 				functionParams = ["x", "y", "z"];
 			}
 
