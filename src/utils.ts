@@ -190,24 +190,21 @@ export class Utils {
 			throw new SyntaxError("Element " + createdElements.length + " def is not defined");
 		}
 
-		this.validateDef(element.def, element.type, createdElements);
+		this.validateDef(element.def, createdElements);
 		this.checkComposedAtts(element.att as Attributes, createdElements);
 	}
 
-	private validateDef(def: any[], type: string, createdElements: JSXElement[]) {
+	private validateDef(def: any[], createdElements: JSXElement[]) {
 		for (let i = 0; i < def.length; i++) {
-			if (def[i] == undefined) {
-				return;
-			}
 			if (Array.isArray(def[i])) {
-				this.validateDef(def[i], type, createdElements);
+				this.validateDef(def[i], createdElements);
 			}
 
 			const index = this.checkComposedElements(def[i], createdElements);
 			if (index >= 0) {
 				def[i] = createdElements[index].element;
 			}
-			def[i] = this.checkFunction(def[i], type, createdElements);
+			def[i] = this.checkFunction(def[i], createdElements);
 		}
 	}
 
@@ -283,10 +280,10 @@ export class Utils {
 				return "var(--color-pink)";
 			default:
 				return value;
-	}
+		}
 	}
 
-	private checkFunction(item: any, type: string, createdElements: JSXElement[]): any {
+	private checkFunction(item: any, createdElements: JSXElement[]): any {
 		// regex to check if it is the start of a function
 		const f = RegExp(/f:|f\(([^,]*)?(?:,([^,]*)?(?:,([^,]*))?)?\):/g)
 		const func = f.exec(item);
@@ -318,18 +315,13 @@ export class Utils {
 
 			const equation = item;
 
-			let functionParams = [];
-			for (let i = 1; i < func.length; i++) {
-				if (func[i] == undefined)  {
-					break;
-				}
-				else {
-					functionParams.push(func[i]);
-				}
-			}
+			let functionParams: string[]; 
 
-			if (functionParams.length == 0) {
+			if (func[1] == undefined) {
 				functionParams = ["x", "y", "z"];
+			}
+			else {
+				functionParams = func.slice(1, func.length);
 			}
 
 			const functionDef ="return " + equation + ";";
