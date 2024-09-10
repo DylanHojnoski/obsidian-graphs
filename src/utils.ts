@@ -204,7 +204,9 @@ export class Utils {
 			if (index >= 0) {
 				def[i] = createdElements[index].element;
 			}
-			def[i] = this.checkFunction(def[i], createdElements);
+			if (typeof def[i] === "string") {
+				def[i] = this.checkFunction(def[i], createdElements);
+			}
 		}
 	}
 
@@ -289,7 +291,7 @@ export class Utils {
 		const func = f.exec(item);
 
 		// if the def is a string and passes regex crreate the function
-		if (typeof item === 'string' && func != undefined && func.length > 0) {
+		if (typeof item === 'string' && func != undefined) {
 			// regex to check if function contains an element
 			const re = RegExp(/e[0-9]+/);
 			item = item.replace(func[0], "")
@@ -324,7 +326,7 @@ export class Utils {
 				functionParams = func.slice(1, func.length);
 			}
 
-			const functionDef ="return " + equation + ";";
+			const functionDef = "return " + equation + ";";
 
 			// create function that is used to calculate the values
 			return  new Function(...this.argsArray, "createdElements", ...functionParams, functionDef).bind({}, ...this.mathFunctions, createdElements);
