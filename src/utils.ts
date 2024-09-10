@@ -290,7 +290,6 @@ export class Utils {
 		// regex to check if it is the start of a function
 		const f = RegExp(/f:|f\(([^,]*)?(?:,([^,]*)?(?:,([^,]*))?)?\):/g)
 		const func = f.exec(item);
-		console.log(func);
 
 		// if the def is a string and passes regex crreate the function
 		if (typeof item === 'string' && func != undefined && func.length > 0) {
@@ -333,8 +332,10 @@ export class Utils {
 				functionParams = ["x", "y", "z"];
 			}
 
+			const functionDef ="return " + equation + ";";
+
 			// create function that is used to calculate the values
-			return  new Function(...this.argsArray, "createdElements", ...functionParams, "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
+			return  new Function(...this.argsArray, "createdElements", ...functionParams, functionDef).bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
 	}
