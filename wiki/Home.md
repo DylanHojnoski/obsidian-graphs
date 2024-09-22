@@ -40,7 +40,9 @@ There are three fields to fill out
 		
 #### Creating Functions
 
-To make a function as a parameter you need to make a string such as `"f:"` after the f: you can put any kind of math that you want. You can use one variable `x`. While `x` may not always represent the actual x-axis you must always use `x` as the variable
+To make a function as a parameter you need to make a string such as `"f:"` after the f: you can use math. 
+
+For variables there are by default `x`, `y`, and `z` defined in that order but they may not be used based on the element that they are being used on. You can change the name of the variable by doing `f(a,b,c):`.  You can define up to three variables. What the variables represent may change based on the element they are used on but in most cases it is the x, y, and z axes.
 
 Math Operators
 * \+
