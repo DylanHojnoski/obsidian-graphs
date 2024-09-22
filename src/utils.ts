@@ -1,5 +1,5 @@
 import { Board, JSXGraph, GeometryElement, View3D } from "jsxgraph";
-import { App, parseYaml } from "obsidian";
+import { parseYaml } from "obsidian";
 import { Att3d, Attributes, ElementInfo, Graph, GraphInfo, JSXElement, Types } from "./types";
 
 export class Utils {
@@ -204,7 +204,9 @@ export class Utils {
 			if (index >= 0) {
 				def[i] = createdElements[index].element;
 			}
-			def[i] = this.checkFunction(def[i], createdElements);
+			if (typeof def[i] === "string") {
+				def[i] = this.checkFunction(def[i], createdElements);
+			}
 		}
 	}
 
@@ -285,13 +287,14 @@ export class Utils {
 
 	private checkFunction(item: any, createdElements: JSXElement[]): any {
 		// regex to check if it is the start of a function
-		const f = RegExp("f:")
+		const f = RegExp(/f:|f\(([^,]*)?(?:,([^,]*)?(?:,([^,]*))?)?\):/g)
+		const func = f.exec(item);
 
 		// if the def is a string and passes regex crreate the function
-		if (typeof item === 'string' && f.test(item)) {
+		if (typeof item === 'string' && func != undefined) {
 			// regex to check if function contains an element
 			const re = RegExp(/e[0-9]+/);
-			item = item.replace(f, "")
+			item = item.replace(func[0], "")
 
 			// function uses composed elements
 			if (typeof item === 'string' && re.test(item)) {
@@ -314,8 +317,16 @@ export class Utils {
 
 			const equation = item;
 
+			let functionParams: string[] = ["x", "y", "z"]; 
+
+			if (func[1] != undefined) {
+				functionParams = func.slice(1, func.length);
+			}
+
+			const functionDef = "return " + equation + ";";
+
 			// create function that is used to calculate the values
-			return  new Function(...this.argsArray, "createdElements", "x", "y", "z", "return " + equation + ";").bind({}, ...this.mathFunctions, createdElements);
+			return  new Function(...this.argsArray, "createdElements", ...functionParams, functionDef).bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
 	}
