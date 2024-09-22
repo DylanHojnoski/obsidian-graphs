@@ -317,12 +317,9 @@ export class Utils {
 
 			const equation = item;
 
-			let functionParams: string[]; 
+			let functionParams: string[] = ["x", "y", "z"]; 
 
-			if (func[1] == undefined) {
-				functionParams = ["x", "y", "z"];
-			}
-			else {
+			if (func[1] != undefined) {
 				functionParams = func.slice(1, func.length);
 			}
 
