@@ -37,11 +37,11 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		this.containerEl.createEl("h2", {text: "Graph Style"});
+		new Setting(this.containerEl).setName("Style").setHeading();
 
 		new Setting(this.containerEl)
 		.setName("Height")
-		.setDesc("Height of the graph in pixels")
+		.setDesc("Height of the graph in pixels.")
 		.addText((text) => 
 			text
 				.setValue(this.plugin.settings.height.toString())
@@ -55,7 +55,7 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl)
 		.setName("Width")
-		.setDesc("Width of the graph in pixels")
+		.setDesc("Width of the graph in pixels.")
 		.addText((text) => 
 			text
 				.setValue(this.plugin.settings.width.toString())
@@ -69,7 +69,7 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 
 		new Setting(this.containerEl) 
 			.setName("Alignment")
-			.setDesc("The horizontal alignment of the graph")
+			.setDesc("The horizontal alignment of the graph.")
 			.addDropdown((dropdown) => {
 				dropdown
 					.addOption(Alignment.left, "left")
@@ -83,7 +83,7 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 					})
 			});
 
-		this.containerEl.createEl("h2", {text: "Export"});
+		new Setting(this.containerEl).setName("Export").setHeading();
 
 		new Setting(this.containerEl).setName("Default location").addSearch((search) => {
 			new LocationSuggester(this.app, search.inputEl);
