@@ -334,7 +334,7 @@ export class Utils {
 	exportGraph(graph: Board, transparentBackground: boolean) {
 		const text = graph.renderer.dumpToDataURI();
 		const ar = text.split(",");
-		let  decoded =  decodeURIComponent(escape(atob(ar[1])));
+		let  decoded =  atob(ar[1]);
 		const re  = RegExp(/var\(\s*(--[\w-]+)\s*\)/g);
 		let matches = re.exec(decoded);
 		while (matches != null) {
@@ -343,15 +343,15 @@ export class Utils {
 		}
 
 		const insertPosition = decoded.indexOf(">")+1;
-		let begining = decoded.slice(0, insertPosition);
+		let beginning = decoded.slice(0, insertPosition);
 		const ending = decoded.slice(insertPosition);
 
 		if (!transparentBackground) {
-			begining = begining.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
+			beginning = beginning.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
 		}
 
 		const  style = "<style>.JXG_navigation {display: none;}</style>"
-		decoded = begining + style + ending;
+		decoded = beginning + style + ending;
 
 		return decoded;
 	}
