@@ -1,4 +1,4 @@
-import { AbstractInputSuggest, App, TAbstractFile, TFolder } from "obsidian";
+import { AbstractInputSuggest, App, normalizePath, TAbstractFile, TFolder } from "obsidian";
 
 export class LocationSuggester extends AbstractInputSuggest<string> {
 
@@ -13,7 +13,7 @@ export class LocationSuggester extends AbstractInputSuggest<string> {
 
     getSuggestions(inputStr: string): string[] {
         const suggestions: string[] = [];
-        const lowerCaseInputStr = inputStr.toLowerCase();
+        const lowerCaseInputStr = normalizePath(inputStr.toLowerCase());
 
         this.paths.forEach((path: TAbstractFile) => {
 			if (path.path.toLowerCase().contains(lowerCaseInputStr)) {

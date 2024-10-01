@@ -1,5 +1,5 @@
 import ObsidianGraphs from "main";
-import { App, debounce, PluginSettingTab, Setting } from "obsidian";
+import { App, debounce, normalizePath, PluginSettingTab, Setting } from "obsidian";
 import { LocationSuggester } from "./LocationSuggester";
 
 export interface ObsidianGraphsSettings {
@@ -90,7 +90,7 @@ export class ObsidianGraphsSettingsTab extends PluginSettingTab {
 			search.setPlaceholder("Default is vault root")
 			.setValue(this.plugin.settings.defaultExportLocation)
 			.onChange(debounce(async (path) => {
-				this.plugin.settings.defaultExportLocation = path;
+				this.plugin.settings.defaultExportLocation = normalizePath(path);
 				await this.plugin.saveSettings();
 			}))
 		});

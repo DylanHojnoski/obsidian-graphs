@@ -1,6 +1,6 @@
 import { Board } from "jsxgraph";
 import ObsidianGraphs from "main";
-import {  debounce, Modal, Notice, Setting } from "obsidian";
+import {  debounce, Modal, normalizePath, Notice, Setting } from "obsidian";
 import { LocationSuggester } from "./LocationSuggester";
 import { Utils } from "./utils";
 
@@ -46,7 +46,7 @@ export class ExportModal extends Modal {
 			search.setPlaceholder("Default is vault root")
 			.setValue(this.saveLocation)
 			.onChange(debounce(async (path) => {
-				this.saveLocation = path;
+				this.saveLocation = normalizePath(path);
 			}))
 		});
 
