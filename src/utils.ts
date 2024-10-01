@@ -4,7 +4,7 @@ import { Att3d, Attributes, ElementInfo, Graph, GraphInfo, JSXElement, Types } f
 
 export class Utils {
 	argsArray: string[];
-	mathFunctions: any[];
+	mathFunctions: Math[];
 
 	constructor() {
 		this.argsArray =  Object.getOwnPropertyNames(Math) ;
@@ -200,20 +200,20 @@ export class Utils {
 				this.validateDef(def[i], createdElements);
 			}
 
-			const index = this.checkComposedElements(def[i], createdElements);
-			if (index >= 0) {
-				def[i] = createdElements[index].element;
-			}
 			if (typeof def[i] === "string") {
+				const index = this.checkComposedElements(def[i], createdElements);
+				if (index >= 0) {
+					def[i] = createdElements[index].element;
+				}
 				def[i] = this.checkFunction(def[i], createdElements);
 			}
 		}
 	}
 
-	private checkComposedElements(item: any, createdElements: JSXElement[]): number {
+	private checkComposedElements(item: string, createdElements: JSXElement[]): number {
 		const re  = new RegExp("^e[0-9]+$");
 		// if it is a string and passes the regex test add the element to def
-		if (typeof item === 'string' && re.test(item)) {
+		if (re.test(item)) {
 			const index = Number.parseInt(item.substring(1,item.length));
 
 			// checks if it is a valid element
@@ -285,12 +285,12 @@ export class Utils {
 		}
 	}
 
-	private checkFunction(item: any, createdElements: JSXElement[]): any {
+	private checkFunction(item: string, createdElements: JSXElement[]): string {
 		// regex to check if it is the start of a function
 		const f = RegExp(/f:|f\(([^,]*)?(?:,([^,]*)?(?:,([^,]*))?)?\):/g)
 		const func = f.exec(item);
 
-		// if the def is a string and passes regex crreate the function
+		// if the def is a string and passes regex create the function
 		if (typeof item === 'string' && func != undefined) {
 			// regex to check if function contains an element
 			const re = RegExp(/e[0-9]+/);
