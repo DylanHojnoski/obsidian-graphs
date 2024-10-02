@@ -1,20 +1,18 @@
 import { Board } from "jsxgraph";
-import ObsidianGraphs from "main";
+import Graphs from "main";
 import {  debounce, Modal, normalizePath, Notice, Setting } from "obsidian";
-import { LocationSuggester } from "./LocationSuggester";
-import { Utils } from "./utils";
+import { LocationSuggester } from "./locationSuggester";
 
 export class ExportModal extends Modal {
-	plugin: ObsidianGraphs;
+	plugin: Graphs;
 	svgs: string[];
 	saveLocation: string;
 	exportButtons: HTMLButtonElement[];
 	transparentBackground: boolean;
 	graphs: HTMLElement[];
 	boards: Board[];
-	utils: Utils;
 
-	constructor(plugin: ObsidianGraphs, boards: Board[]) {
+	constructor(plugin: Graphs, boards: Board[]) {
 		super(plugin.app);
 		this.plugin = plugin
 		this.saveLocation = this.plugin.settings.defaultExportLocation
@@ -22,8 +20,32 @@ export class ExportModal extends Modal {
 		this.exportButtons = [];
 		this.graphs = [];
 		this.boards = boards;
-		this.utils = new Utils();
 		this.svgs = [];
+	}
+
+	exportGraph(graph: Board, transparentBackground: boolean) {
+		const text = graph.renderer.dumpToDataURI();
+		const ar = text.split(",");
+		let  decoded =  atob(ar[1]);
+		const re  = RegExp(/var\(\s*(--[\w-]+)\s*\)/g);
+		let matches = re.exec(decoded);
+		while (matches != null) {
+				decoded = decoded.replace(matches[0], document.body.getCssPropertyValue(matches[1]));
+				matches = re.exec(decoded);
+		}
+
+		const insertPosition = decoded.indexOf(">")+1;
+		let beginning = decoded.slice(0, insertPosition);
+		const ending = decoded.slice(insertPosition);
+
+		if (!transparentBackground) {
+			beginning = beginning.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
+		}
+
+		const  style = "<style>.JXG_navigation {display: none;}</style>"
+		decoded = beginning + style + ending;
+
+		return decoded;
 	}
 
 	async onOpen() {
@@ -34,14 +56,14 @@ export class ExportModal extends Modal {
 			contentEl.parentElement.addClass("exportGraphModal");
 		}
 
-		contentEl.createEl("h1", { text: "Export Graphs" });
+		this.setTitle("Export Graphs");
 		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading mode."})
 		contentEl.createEl("p", {text: "Graphs will no longer be interactable or adapt colors to Obsidian theme."}).style.color = "var(--text-faint)"
 
 
 		const settings = contentEl.createDiv();
 
-		const locationInput = new Setting(settings).setName("Export location").addSearch((search) => {
+		new Setting(settings).setName("Export location").addSearch((search) => {
 			new LocationSuggester(this.app, search.inputEl);
 			search.setPlaceholder("Default is vault root")
 			.setValue(this.saveLocation)
@@ -49,9 +71,6 @@ export class ExportModal extends Modal {
 				this.saveLocation = normalizePath(path);
 			}))
 		});
-
-		locationInput.settingEl.style.borderTop = "1px solid var(--background-modifier-border)";
-		locationInput.settingEl.style.paddingTop = "0.75em";
 
 		new Setting(settings).setName("Transparent background")
 		.addToggle((toggle) => {
@@ -100,7 +119,7 @@ export class ExportModal extends Modal {
 			const svgContainer = container.createDiv();
 			svgContainer.empty();
 			svgContainer.addClass("svgContainer");
-			const svg = this.utils.exportGraph(this.boards[i], this.transparentBackground);
+			const svg = this.exportGraph(this.boards[i], this.transparentBackground);
 			svgContainer.innerHTML = svg;
 
 			if (svgContainer.firstElementChild?.getAttribute("width") == "0") {

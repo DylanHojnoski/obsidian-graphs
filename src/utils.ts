@@ -4,7 +4,7 @@ import { Att3d, Attributes, ElementInfo, Graph, GraphInfo, JSXElement, Types } f
 
 export class Utils {
 	argsArray: string[];
-	mathFunctions: any[];
+	mathFunctions: Math[];
 
 	constructor() {
 		this.argsArray =  Object.getOwnPropertyNames(Math) ;
@@ -194,26 +194,26 @@ export class Utils {
 		this.checkComposedAtts(element.att as Attributes, createdElements);
 	}
 
-	private validateDef(def: any[], createdElements: JSXElement[]) {
+	private validateDef(def: any, createdElements: JSXElement[]) {
 		for (let i = 0; i < def.length; i++) {
 			if (Array.isArray(def[i])) {
 				this.validateDef(def[i], createdElements);
 			}
 
-			const index = this.checkComposedElements(def[i], createdElements);
-			if (index >= 0) {
-				def[i] = createdElements[index].element;
-			}
 			if (typeof def[i] === "string") {
+				const index = this.checkComposedElements(def[i], createdElements);
+				if (index >= 0) {
+					def[i] = createdElements[index].element;
+				}
 				def[i] = this.checkFunction(def[i], createdElements);
 			}
 		}
 	}
 
-	private checkComposedElements(item: any, createdElements: JSXElement[]): number {
+	private checkComposedElements(item: string, createdElements: JSXElement[]): number {
 		const re  = new RegExp("^e[0-9]+$");
 		// if it is a string and passes the regex test add the element to def
-		if (typeof item === 'string' && re.test(item)) {
+		if (re.test(item)) {
 			const index = Number.parseInt(item.substring(1,item.length));
 
 			// checks if it is a valid element
@@ -285,34 +285,30 @@ export class Utils {
 		}
 	}
 
-	private checkFunction(item: any, createdElements: JSXElement[]): any {
+	private checkFunction(item: string, createdElements: JSXElement[]): string {
 		// regex to check if it is the start of a function
 		const f = RegExp(/f:|f\(([^,]*)?(?:,([^,]*)?(?:,([^,]*))?)?\):/g)
 		const func = f.exec(item);
 
-		// if the def is a string and passes regex crreate the function
+		// if the def is a string and passes regex create the function
 		if (typeof item === 'string' && func != undefined) {
 			// regex to check if function contains an element
 			const re = RegExp(/e[0-9]+/);
 			item = item.replace(func[0], "")
 
-			// function uses composed elements
-			if (typeof item === 'string' && re.test(item)) {
-				// get the composed elements
-				let composed = re.exec(item);
-				while (composed != null) {
-					// go through composed elements and and validate and replace with proper string
-					const index = this.checkComposedElements(composed[0], createdElements);
+			let composed = re.exec(item);
+			while (composed != null) {
+				// go through composed elements and and validate and replace with proper string
+				const index = this.checkComposedElements(composed[0], createdElements);
 
-					if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
-						item = item.replace(re, "createdElements["+index+"].element.Value()");
-					}
-					else {
-						item = item.replace(re, "createdElements["+index+"].element");
-					}
-
-					composed = re.exec(item);
+				if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
+					item = item.replace(re, "createdElements["+index+"].element.Value()");
 				}
+				else {
+					item = item.replace(re, "createdElements["+index+"].element");
+				}
+
+				composed = re.exec(item);
 			}
 
 			const equation = item;
@@ -329,31 +325,6 @@ export class Utils {
 			return  new Function(...this.argsArray, "createdElements", ...functionParams, functionDef).bind({}, ...this.mathFunctions, createdElements);
 		}
 		return item;
-	}
-
-	exportGraph(graph: Board, transparentBackground: boolean) {
-		const text = graph.renderer.dumpToDataURI();
-		const ar = text.split(",");
-		let  decoded =  atob(ar[1]);
-		const re  = RegExp(/var\(\s*(--[\w-]+)\s*\)/g);
-		let matches = re.exec(decoded);
-		while (matches != null) {
-				decoded = decoded.replace(matches[0], document.body.getCssPropertyValue(matches[1]));
-				matches = re.exec(decoded);
-		}
-
-		const insertPosition = decoded.indexOf(">")+1;
-		let beginning = decoded.slice(0, insertPosition);
-		const ending = decoded.slice(insertPosition);
-
-		if (!transparentBackground) {
-			beginning = beginning.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
-		}
-
-		const  style = "<style>.JXG_navigation {display: none;}</style>"
-		decoded = beginning + style + ending;
-
-		return decoded;
 	}
 }
 

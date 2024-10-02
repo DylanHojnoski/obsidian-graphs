@@ -3,19 +3,19 @@ import { boards,  JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
-import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
+import { DEFAULT_SETTINGS, GraphsSettings as GraphsSettings, GraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
-import { ExportModal } from 'src/ExportModal';
+import { ExportModal } from 'src/exportModal';
 
-export default class ObsidianGraphs extends Plugin {
-	settings: ObsidianGraphsSettings
+export default class Graphs extends Plugin {
+	settings: GraphsSettings
 	count = 0;
 	utils: Utils = new Utils();
 
 	async onload () {
 		await this.loadSettings();
 
-		this.addSettingTab(new ObsidianGraphsSettingsTab(this.app, this));
+		this.addSettingTab(new GraphsSettingsTab(this.app, this));
 
 		window.CodeMirror.defineMode("graph", config => window.CodeMirror.getMode(config, "javascript"));
 
