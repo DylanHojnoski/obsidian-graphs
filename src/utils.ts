@@ -194,7 +194,7 @@ export class Utils {
 		this.checkComposedAtts(element.att as Attributes, createdElements);
 	}
 
-	private validateDef(def: any[], createdElements: JSXElement[]) {
+	private validateDef(def: any, createdElements: JSXElement[]) {
 		for (let i = 0; i < def.length; i++) {
 			if (Array.isArray(def[i])) {
 				this.validateDef(def[i], createdElements);
@@ -296,23 +296,19 @@ export class Utils {
 			const re = RegExp(/e[0-9]+/);
 			item = item.replace(func[0], "")
 
-			// function uses composed elements
-			if (typeof item === 'string' && re.test(item)) {
-				// get the composed elements
-				let composed = re.exec(item);
-				while (composed != null) {
-					// go through composed elements and and validate and replace with proper string
-					const index = this.checkComposedElements(composed[0], createdElements);
+			let composed = re.exec(item);
+			while (composed != null) {
+				// go through composed elements and and validate and replace with proper string
+				const index = this.checkComposedElements(composed[0], createdElements);
 
-					if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
-						item = item.replace(re, "createdElements["+index+"].element.Value()");
-					}
-					else {
-						item = item.replace(re, "createdElements["+index+"].element");
-					}
-
-					composed = re.exec(item);
+				if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
+					item = item.replace(re, "createdElements["+index+"].element.Value()");
 				}
+				else {
+					item = item.replace(re, "createdElements["+index+"].element");
+				}
+
+				composed = re.exec(item);
 			}
 
 			const equation = item;
