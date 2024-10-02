@@ -326,30 +326,5 @@ export class Utils {
 		}
 		return item;
 	}
-
-	exportGraph(graph: Board, transparentBackground: boolean) {
-		const text = graph.renderer.dumpToDataURI();
-		const ar = text.split(",");
-		let  decoded =  atob(ar[1]);
-		const re  = RegExp(/var\(\s*(--[\w-]+)\s*\)/g);
-		let matches = re.exec(decoded);
-		while (matches != null) {
-				decoded = decoded.replace(matches[0], document.body.getCssPropertyValue(matches[1]));
-				matches = re.exec(decoded);
-		}
-
-		const insertPosition = decoded.indexOf(">")+1;
-		let beginning = decoded.slice(0, insertPosition);
-		const ending = decoded.slice(insertPosition);
-
-		if (!transparentBackground) {
-			beginning = beginning.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
-		}
-
-		const  style = "<style>.JXG_navigation {display: none;}</style>"
-		decoded = beginning + style + ending;
-
-		return decoded;
-	}
 }
 
