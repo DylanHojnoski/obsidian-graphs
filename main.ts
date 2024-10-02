@@ -5,7 +5,7 @@ import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, ObsidianGraphsSettings, ObsidianGraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
-import { ExportModal } from 'src/ExportModal';
+import { ExportModal } from 'src/exportModal';
 
 export default class ObsidianGraphs extends Plugin {
 	settings: ObsidianGraphsSettings

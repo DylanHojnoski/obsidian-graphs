@@ -1,7 +1,7 @@
 import { Board } from "jsxgraph";
 import ObsidianGraphs from "main";
 import {  debounce, Modal, normalizePath, Notice, Setting } from "obsidian";
-import { LocationSuggester } from "./LocationSuggester";
+import { LocationSuggester } from "./locationSuggester";
 
 export class ExportModal extends Modal {
 	plugin: ObsidianGraphs;

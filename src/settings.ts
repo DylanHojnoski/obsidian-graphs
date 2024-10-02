@@ -1,6 +1,6 @@
 import ObsidianGraphs from "main";
 import { App, debounce, normalizePath, PluginSettingTab, Setting } from "obsidian";
-import { LocationSuggester } from "./LocationSuggester";
+import { LocationSuggester } from "./locationSuggester";
 
 export interface ObsidianGraphsSettings {
 	height: number;
