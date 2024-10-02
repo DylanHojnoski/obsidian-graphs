@@ -56,14 +56,14 @@ export class ExportModal extends Modal {
 			contentEl.parentElement.addClass("exportGraphModal");
 		}
 
-		contentEl.createEl("h1", { text: "Export Graphs" });
+		this.setTitle("Export Graphs");
 		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading mode."})
 		contentEl.createEl("p", {text: "Graphs will no longer be interactable or adapt colors to Obsidian theme."}).style.color = "var(--text-faint)"
 
 
 		const settings = contentEl.createDiv();
 
-		const locationInput = new Setting(settings).setName("Export location").addSearch((search) => {
+		new Setting(settings).setName("Export location").addSearch((search) => {
 			new LocationSuggester(this.app, search.inputEl);
 			search.setPlaceholder("Default is vault root")
 			.setValue(this.saveLocation)
@@ -71,9 +71,6 @@ export class ExportModal extends Modal {
 				this.saveLocation = normalizePath(path);
 			}))
 		});
-
-		locationInput.settingEl.style.borderTop = "1px solid var(--background-modifier-border)";
-		locationInput.settingEl.style.paddingTop = "0.75em";
 
 		new Setting(settings).setName("Transparent background")
 		.addToggle((toggle) => {
