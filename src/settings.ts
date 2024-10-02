@@ -1,8 +1,8 @@
-import ObsidianGraphs from "main";
+import Graphs from "main";
 import { App, debounce, normalizePath, PluginSettingTab, Setting } from "obsidian";
 import { LocationSuggester } from "./locationSuggester";
 
-export interface ObsidianGraphsSettings {
+export interface GraphsSettings {
 	height: number;
 	width: number;
 	alignment: string;
@@ -16,7 +16,7 @@ enum Alignment {
 	right = "0 0 0 auto",
 }
 
-export const DEFAULT_SETTINGS: Partial<ObsidianGraphsSettings> = {
+export const DEFAULT_SETTINGS: Partial<GraphsSettings> = {
 	height: 300,
 	width: 700,
 	alignment: Alignment.center,
@@ -24,10 +24,10 @@ export const DEFAULT_SETTINGS: Partial<ObsidianGraphsSettings> = {
 	transparentBackground: false,
 };
 
-export class ObsidianGraphsSettingsTab extends PluginSettingTab {
-	plugin: ObsidianGraphs;
+export class GraphsSettingsTab extends PluginSettingTab {
+	plugin: Graphs;
 
-	constructor(app: App, plugin: ObsidianGraphs) {
+	constructor(app: App, plugin: Graphs) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

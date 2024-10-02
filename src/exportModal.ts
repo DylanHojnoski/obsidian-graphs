@@ -1,10 +1,10 @@
 import { Board } from "jsxgraph";
-import ObsidianGraphs from "main";
+import Graphs from "main";
 import {  debounce, Modal, normalizePath, Notice, Setting } from "obsidian";
 import { LocationSuggester } from "./locationSuggester";
 
 export class ExportModal extends Modal {
-	plugin: ObsidianGraphs;
+	plugin: Graphs;
 	svgs: string[];
 	saveLocation: string;
 	exportButtons: HTMLButtonElement[];
@@ -12,7 +12,7 @@ export class ExportModal extends Modal {
 	graphs: HTMLElement[];
 	boards: Board[];
 
-	constructor(plugin: ObsidianGraphs, boards: Board[]) {
+	constructor(plugin: Graphs, boards: Board[]) {
 		super(plugin.app);
 		this.plugin = plugin
 		this.saveLocation = this.plugin.settings.defaultExportLocation
