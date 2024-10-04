@@ -435,9 +435,14 @@ JXG.themes['obsidian'] = {
 		highlightStrokeColor: interactiveAccentHover,
 		curveLeft: {
 			color: interactiveAccent,
-
 		},
 		curveRight: {
+			color: interactiveAccent,
+		},
+		baseLeft: {
+			color: interactiveAccent,
+		},
+		baseRight: {
 			color: interactiveAccent,
 		},
 	},
