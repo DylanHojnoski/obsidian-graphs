@@ -1,5 +1,5 @@
 import { loadMathJax, MarkdownView, Plugin } from 'obsidian';
-import { boards,  JSXGraph } from 'jsxgraph';
+import { JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { Graph, GraphInfo } from 'src/types';
 import "./src/theme/obsidian.ts"
@@ -11,6 +11,7 @@ export default class Graphs extends Plugin {
 	settings: GraphsSettings
 	count = 0;
 	utils: Utils = new Utils();
+	graphs: Map<string, Graph[]> = new Map();
 
 	async onload () {
 		await this.loadSettings();
@@ -49,15 +50,14 @@ export default class Graphs extends Plugin {
 				if (view == "preview") {
 					if (!checking) {
 						const graphs = []
-						//@ts-ignore
-						for (const key in boards) {
-							//@ts-ignore
-							const div: HTMLElement = boards[key].containerObj;
+						const activeGraphs = this.graphs.get(this.getCurrentFileName()) ?? [];
+
+						for (const graph of activeGraphs) {
+							const div: HTMLElement = graph.board.containerObj;
 
 							// check the if it is in the active files
-							if (div.hasClass(this.getCurrentFileName()) && !div.hasClass("LivePreview")) {
-								//@ts-ignore
-								graphs.push(boards[key]);
+							if (!div.hasClass("LivePreview")) {
+								graphs.push(graph.board);
 							}
 						}
 						new ExportModal(this, graphs).open();
@@ -85,7 +85,7 @@ export default class Graphs extends Plugin {
 			const currentFileName = this.getCurrentFileName();
 
 			// create the div that contains the board
-			const graphDiv = element.createEl("div", {cls: "jxgbox " + currentFileName});
+			const graphDiv = element.createEl("div", {cls: "jxgbox"});
 
 			if (this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode() == "source") {
 				graphDiv.addClass("LivePreview");
@@ -102,6 +102,14 @@ export default class Graphs extends Plugin {
 				return;
 			}
 
+			if (this.graphs.has(currentFileName)) {
+				this.graphs.get(currentFileName)?.push(graph);
+			}
+			else {
+				this.graphs.set(currentFileName, [graph]);
+			}
+
+
 			if (graphInfo.elements != undefined) {
 				// add every element to the graph 
 				for (let i = 0; i < graphInfo.elements.length; i++) {
@@ -117,14 +125,14 @@ export default class Graphs extends Plugin {
 	}
 
 	onunload() {
-		//@ts-ignore
-		for (const key in boards) {
-			//@ts-ignore
-			const div = boards[key].containerObj;
+		for (const key of this.graphs.keys()) {
+			const graphs: Graph[] = this.graphs.get(key) ?? [];
 
-			//@ts-ignore
-			JSXGraph.freeBoard(boards[key]);
-			div.remove();
+			for (const graph of graphs) {
+				JSXGraph.freeBoard(graph.board);
+				graph.board.containerObj.remove();
+			}
+			this.graphs.delete(key);
 		}
 	}
 
@@ -143,8 +151,7 @@ export default class Graphs extends Plugin {
 		let currentFileName = "";
 		const currentFile = this.app.workspace.getActiveFile();
 		if (currentFile) {
-			currentFileName = currentFile.name.substring(0, currentFile.name.indexOf("."))
-			currentFileName = currentFileName.replace(/\s/g, "");
+			currentFileName = currentFile.basename.replace(/\s/g, "");
 		}
 		return currentFileName;
 	}
@@ -155,27 +162,15 @@ export default class Graphs extends Plugin {
 		const files = this.app.workspace.getLeavesOfType("markdown");
 		files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
 
-		// go through all the boards and delete ones that are not in active files
-		//@ts-ignore
-		for (const key in boards) {
-			let active = false;
-			//@ts-ignore
-			const div = boards[key].containerObj;
+		for (const key of this.graphs.keys()) {
+			if (!activeFileNames.contains(key)) {
+				const graphs: Graph[] = this.graphs.get(key) ?? [];
 
-			// check the if it is in the active files
-			for (const name of activeFileNames) {
-				if (div.hasClass(name)) {
-					active = true;
-					break;
+				for (const graph of graphs) {
+					JSXGraph.freeBoard(graph.board);
+					graph.board.containerObj.remove();
 				}
-			}
-
-			// it is not in active files so delete
-			if (!active) {
-				//@ts-ignore
-				boards[key].containerObj.remove();
-				//@ts-ignore
-				JSXGraph.freeBoard(boards[key]);
+				this.graphs.delete(key);
 			}
 		}
 	}
