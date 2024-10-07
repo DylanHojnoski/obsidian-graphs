@@ -24,6 +24,8 @@ export class ExportModal extends Modal {
 	}
 
 	exportGraph(graph: Board, transparentBackground: boolean) {
+
+		const svg = graph.containerObj.querySelector("svg");
 		const text = graph.renderer.dumpToDataURI();
 		const ar = text.split(",");
 		let  decoded =  atob(ar[1]);
@@ -39,13 +41,14 @@ export class ExportModal extends Modal {
 		const ending = decoded.slice(insertPosition);
 
 		if (!transparentBackground) {
-			beginning = beginning.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
+			beginning = beginning.replace("style=\"", "style=\"fill: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
 		}
 
 		const  style = "<style>.JXG_navigation {display: none;}</style>"
 		decoded = beginning + style + ending;
 
 		return decoded;
+		//return svg;
 	}
 
 	async onOpen() {
@@ -120,7 +123,10 @@ export class ExportModal extends Modal {
 			svgContainer.empty();
 			svgContainer.addClass("svgContainer");
 			const svg = this.exportGraph(this.boards[i], this.transparentBackground);
-			svgContainer.innerHTML = svg;
+			if (svg != null) {
+				svgContainer.innerHTML = svg;
+				this.svgs.push(svg);
+			}
 
 			if (svgContainer.firstElementChild?.getAttribute("width") == "0") {
 				graphNumber--;
@@ -128,7 +134,6 @@ export class ExportModal extends Modal {
 				continue;
 			}
 
-			this.svgs.push(svg);
 
 			const settingsContainer =  container.createDiv();
 			settingsContainer.addClass("exportGraphSettings");
@@ -155,14 +160,31 @@ export class ExportModal extends Modal {
 						this.saveLocation = "";
 					}
 
-					const path = this.saveLocation + fileName + ".svg";
-					const file = this.app.vault.getFileByPath(path);
-					if (!file) {
-						this.app.vault.create(path, this.svgs[graphNumber-1]);
+					const canvas =  settingsContainer.createEl("canvas");
+					const ctx = canvas.getContext("2d");
+					if (ctx) {
+						ctx.canvas.width = 300;
+						ctx.canvas.height = 300;
 					}
-					else {
-						new Notice("File \"" + path + "\" already exists", 5000);
-					}
+					const img = new Image(300, 300);
+					const svgdata = btoa(new XMLSerializer().serializeToString(svgContainer.querySelector("svg") as  SVGElement));
+
+					img.onload = () => {
+						ctx?.drawImage(img, 0, 0);
+
+						const path = this.saveLocation + fileName + ".png";
+						const file = this.app.vault.getFileByPath(path);
+						if (!file) {
+							const png = canvas.toDataURL("image/png").split(",")[1];
+							this.app.vault.create(path, png);
+							console.log(png);
+
+						}
+						else {
+							new Notice("File \"" + path + "\" already exists", 5000);
+						}
+					} 
+					img.src = "data:image/svg+xml;base64," + svgdata;
 
 				});
 				this.exportButtons.push(btn.buttonEl);
