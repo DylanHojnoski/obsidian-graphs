@@ -48,6 +48,38 @@ export class ExportModal extends Modal {
 		return decoded;
 	}
 
+	renderCanvas(canvas: HTMLCanvasElement, svg: string) {
+		const widthString = svg.match(/width="([0-9]+)"/);
+		const heightString = svg.match(/height="([0-9]+)"/);
+
+		let width = 0;
+		let height = 0;
+
+		if (widthString && heightString) {
+			width = Number.parseInt(widthString[1]);
+			height = Number.parseInt(heightString[1]);
+		}
+
+		const ctx = canvas.getContext("2d");
+		if (ctx && width && height) {
+			ctx.canvas.width = width;
+			ctx.canvas.height = height;
+		}
+		const img = new Image(width, height);
+		const svgdata = "data:image/svg+xml;base64," + btoa(svg);
+		img.src = svgdata;
+
+		img.onload = () => {
+			if (ctx) {
+				if (!this.transparentBackground) {
+					ctx.fillStyle = document.body.getCssPropertyValue("--background-secondary"); 
+					ctx.fillRect(0, 0, width, height);
+				}
+				ctx.drawImage(img, 0, 0);
+			}
+		};
+	}
+
 	async onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
@@ -80,15 +112,11 @@ export class ExportModal extends Modal {
 				this.transparentBackground = value;
 
 				for (let i = 0; i < this.graphs.length; i++) {
-					const svg = this.graphs[i].getElementsByTagName("svg").item(0);
+					const canvas = this.graphs[i].getElementsByTagName("canvas").item(0);
+					const svg = this.svgs[i];
 
-					if (svg) {
-						if (this.transparentBackground) {
-							svg.style.backgroundColor = "transparent";
-						}
-						else {
-							svg.style.backgroundColor = document.body.getCssPropertyValue("--background-secondary").toString();
-						} 
+					if (svg && canvas) {
+						this.renderCanvas(canvas, svg);
 					}
 				}
 			})
@@ -117,38 +145,30 @@ export class ExportModal extends Modal {
 			let fileName = this.plugin.getCurrentFileName() + "-graph-" + graphNumber;
 			const svg = this.exportGraph(this.boards[i], this.transparentBackground);
 			if (svg != null) {
-				//svgContainer.innerHTML = svg;
 				this.svgs.push(svg);
+			}
+
+			const widthString = svg.match(/width="([0-9]+)"/);
+			const heightString = svg.match(/height="([0-9]+)"/);
+
+			let width = 0;
+			let height = 0;
+
+			if (widthString && heightString) {
+				width = Number.parseInt(widthString[1]);
+				height = Number.parseInt(heightString[1]);
+			}
+
+			if (width <=  0 || height <= 0) {
+				graphNumber--;
+				container.remove();
+				continue;
 			}
 
 			const canvas = container.createEl("canvas");
 			canvas.empty();
-			const ctx = canvas.getContext("2d");
-			if (ctx) {
-				ctx.canvas.width = 300;
-				ctx.canvas.height = 300;
-			}
-			const img = new Image(300, 300);
-			const svgdata = "data:image/svg+xml;base64," + btoa(svg);
-			img.src = svgdata;
 
-			img.onload = () => {
-				if (ctx) {
-					if (!this.transparentBackground) {
-						ctx.fillStyle = "#262626"; 
-						ctx.fillRect(0, 0, 300, 300);
-					}
-					ctx.drawImage(img, 0, 0);
-				}
-			};
-			//svgContainer.addClass("svgContainer");
-
-			//if (canvas.firstElementChild?.getAttribute("width") == "0") {
-			//	graphNumber--;
-			//	container.remove();
-			//	continue;
-			//}
-
+			this.renderCanvas(canvas, svg)
 
 			const settingsContainer =  container.createDiv();
 			settingsContainer.addClass("exportGraphSettings");
@@ -178,23 +198,16 @@ export class ExportModal extends Modal {
 					const file = this.app.vault.getFileByPath(path);
 					if (!file) {
 						const arr = canvas.toDataURL("image/png").split(",");
-						const test = arr[0].match(/:(.*?);/);
-						let mime;
-						if (test != null)  {
-							mime = test[1]; // Get the mime type
-						}
 						const bstr = atob(arr[1]); // Decode the base64 string
-						const n = bstr.length;
-						const u8arr = new Uint8Array(n);
+						const u8arr = new Uint8Array(bstr.length);
 
 						// Convert the binary string to an array buffer
-						for (let i = 0; i < n; i++) {
+						for (let i = 0; i < bstr.length; i++) {
 							u8arr[i] = bstr.charCodeAt(i);
 						}
 
+						//@ts-ignore
 						this.app.vault.create(path, u8arr);
-
-
 					}
 					else {
 						new Notice("File \"" + path + "\" already exists", 5000);
