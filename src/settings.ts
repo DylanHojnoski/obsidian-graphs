@@ -18,8 +18,8 @@ enum Alignment {
 }
 
 export enum ExportType {
-	png = "png",
-	svg = "svg",
+	png = "PNG",
+	svg = "SVG",
 }
 
 export const DEFAULT_SETTINGS: Partial<GraphsSettings> = {

@@ -138,8 +138,6 @@ export class ExportModal extends Modal {
 
 					this.svgs[i] = svg;
 
-					console.log(svg);
-
 					if (svg && canvas) {
 						this.renderCanvas(canvas, svg);
 					}
@@ -220,7 +218,7 @@ export class ExportModal extends Modal {
 					else if (this.saveLocation == "/") {
 						this.saveLocation = "";
 					}
-					const path = this.saveLocation + fileName + "." + this.exportType ;
+					const path = this.saveLocation + fileName + "." + this.exportType.toLowerCase() ;
 					const file = this.app.vault.getFileByPath(path);
 					if (!file) {
 
