@@ -280,6 +280,8 @@ export class Utils {
 				return "var(--color-purple)";
 			case "pink":
 				return "var(--color-pink)";
+			case "contrast":
+				return "var(--color-base-100)";
 			default:
 				return value;
 		}
