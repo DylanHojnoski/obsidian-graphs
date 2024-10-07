@@ -134,8 +134,10 @@ export class ExportModal extends Modal {
 
 			img.onload = () => {
 				if (ctx) {
-					ctx.fillStyle = "var(--background-secondary)"; 
-					ctx.rect(0, 0, 300, 300);
+					if (!this.transparentBackground) {
+						ctx.fillStyle = "#262626"; 
+						ctx.fillRect(0, 0, 300, 300);
+					}
 					ctx.drawImage(img, 0, 0);
 				}
 			};
@@ -189,9 +191,6 @@ export class ExportModal extends Modal {
 						for (let i = 0; i < n; i++) {
 							u8arr[i] = bstr.charCodeAt(i);
 						}
-
-						// Create a Blob from the array buffer
-						const blob = new Blob([u8arr], { type: mime });
 
 						this.app.vault.create(path, u8arr);
 
