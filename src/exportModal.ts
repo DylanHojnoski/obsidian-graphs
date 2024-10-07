@@ -24,8 +24,6 @@ export class ExportModal extends Modal {
 	}
 
 	exportGraph(graph: Board, transparentBackground: boolean) {
-
-		const svg = graph.containerObj.querySelector("svg");
 		const text = graph.renderer.dumpToDataURI();
 		const ar = text.split(",");
 		let  decoded =  atob(ar[1]);
@@ -48,7 +46,6 @@ export class ExportModal extends Modal {
 		decoded = beginning + style + ending;
 
 		return decoded;
-		//return svg;
 	}
 
 	async onOpen() {
@@ -118,21 +115,37 @@ export class ExportModal extends Modal {
 			container.createEl("h1", { text: "Graph " + graphNumber});
  
 			let fileName = this.plugin.getCurrentFileName() + "-graph-" + graphNumber;
-
-			const svgContainer = container.createDiv();
-			svgContainer.empty();
-			svgContainer.addClass("svgContainer");
 			const svg = this.exportGraph(this.boards[i], this.transparentBackground);
 			if (svg != null) {
-				svgContainer.innerHTML = svg;
+				//svgContainer.innerHTML = svg;
 				this.svgs.push(svg);
 			}
 
-			if (svgContainer.firstElementChild?.getAttribute("width") == "0") {
-				graphNumber--;
-				container.remove();
-				continue;
+			const canvas = container.createEl("canvas");
+			canvas.empty();
+			const ctx = canvas.getContext("2d");
+			if (ctx) {
+				ctx.canvas.width = 300;
+				ctx.canvas.height = 300;
 			}
+			const img = new Image(300, 300);
+			const svgdata = "data:image/svg+xml;base64," + btoa(svg);
+			img.src = svgdata;
+
+			img.onload = () => {
+				if (ctx) {
+					ctx.fillStyle = "var(--background-secondary)"; 
+					ctx.rect(0, 0, 300, 300);
+					ctx.drawImage(img, 0, 0);
+				}
+			};
+			//svgContainer.addClass("svgContainer");
+
+			//if (canvas.firstElementChild?.getAttribute("width") == "0") {
+			//	graphNumber--;
+			//	container.remove();
+			//	continue;
+			//}
 
 
 			const settingsContainer =  container.createDiv();
@@ -159,33 +172,34 @@ export class ExportModal extends Modal {
 					else if (this.saveLocation == "/") {
 						this.saveLocation = "";
 					}
+					const path = this.saveLocation + fileName + ".png";
+					const file = this.app.vault.getFileByPath(path);
+					if (!file) {
+						const arr = canvas.toDataURL("image/png").split(",");
+						const test = arr[0].match(/:(.*?);/);
+						let mime;
+						if (test != null)  {
+							mime = test[1]; // Get the mime type
+						}
+						const bstr = atob(arr[1]); // Decode the base64 string
+						const n = bstr.length;
+						const u8arr = new Uint8Array(n);
 
-					const canvas =  settingsContainer.createEl("canvas");
-					const ctx = canvas.getContext("2d");
-					if (ctx) {
-						ctx.canvas.width = 300;
-						ctx.canvas.height = 300;
+						// Convert the binary string to an array buffer
+						for (let i = 0; i < n; i++) {
+							u8arr[i] = bstr.charCodeAt(i);
+						}
+
+						// Create a Blob from the array buffer
+						const blob = new Blob([u8arr], { type: mime });
+
+						this.app.vault.create(path, u8arr);
+
+
 					}
-					const img = new Image(300, 300);
-					const svgdata = btoa(new XMLSerializer().serializeToString(svgContainer.querySelector("svg") as  SVGElement));
-
-					img.onload = () => {
-						ctx?.drawImage(img, 0, 0);
-
-						const path = this.saveLocation + fileName + ".png";
-						const file = this.app.vault.getFileByPath(path);
-						if (!file) {
-							const png = canvas.toDataURL("image/png").split(",")[1];
-							this.app.vault.create(path, png);
-							console.log(png);
-
-						}
-						else {
-							new Notice("File \"" + path + "\" already exists", 5000);
-						}
-					} 
-					img.src = "data:image/svg+xml;base64," + svgdata;
-
+					else {
+						new Notice("File \"" + path + "\" already exists", 5000);
+					}
 				});
 				this.exportButtons.push(btn.buttonEl);
 				this.graphs.push(container);
