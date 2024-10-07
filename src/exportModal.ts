@@ -2,6 +2,7 @@ import { Board } from "jsxgraph";
 import Graphs from "main";
 import {  debounce, Modal, normalizePath, Notice, Setting } from "obsidian";
 import { LocationSuggester } from "./locationSuggester";
+import { ExportType } from "./settings";
 
 export class ExportModal extends Modal {
 	plugin: Graphs;
@@ -9,6 +10,7 @@ export class ExportModal extends Modal {
 	saveLocation: string;
 	exportButtons: HTMLButtonElement[];
 	transparentBackground: boolean;
+	exportType: string;
 	graphs: HTMLElement[];
 	boards: Board[];
 
@@ -17,6 +19,7 @@ export class ExportModal extends Modal {
 		this.plugin = plugin
 		this.saveLocation = this.plugin.settings.defaultExportLocation
 		this.transparentBackground = this.plugin.settings.transparentBackground;
+		this.exportType = this.plugin.settings.exportType;
 		this.exportButtons = [];
 		this.graphs = [];
 		this.boards = boards;
@@ -39,7 +42,10 @@ export class ExportModal extends Modal {
 		const ending = decoded.slice(insertPosition);
 
 		if (!transparentBackground) {
-			beginning = beginning.replace("style=\"", "style=\"fill: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
+			beginning = beginning.replace("style=\"", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ");
+		}
+		else {
+			beginning = beginning.replace("style=\"", "style=\"background-color: transparent; ");
 		}
 
 		const  style = "<style>.JXG_navigation {display: none;}</style>"
@@ -71,10 +77,6 @@ export class ExportModal extends Modal {
 
 		img.onload = () => {
 			if (ctx) {
-				if (!this.transparentBackground) {
-					ctx.fillStyle = document.body.getCssPropertyValue("--background-secondary"); 
-					ctx.fillRect(0, 0, width, height);
-				}
 				ctx.drawImage(img, 0, 0);
 			}
 		};
@@ -89,7 +91,7 @@ export class ExportModal extends Modal {
 		}
 
 		this.setTitle("Export Graphs");
-		contentEl.createEl("p", {text: "Export graphs as SVGs. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading mode."})
+		contentEl.createEl("p", {text: "Export graphs as PNG or SVG. If a graph in this file is not appearing it has not been rendered in view yet and you need to scroll down in reading mode."})
 		contentEl.createEl("p", {text: "Graphs will no longer be interactable or adapt colors to Obsidian theme."}).style.color = "var(--text-faint)"
 
 
@@ -104,6 +106,18 @@ export class ExportModal extends Modal {
 			}))
 		});
 
+		new Setting(settings) 
+			.setName("File type")
+			.addDropdown((dropdown) => {
+				dropdown
+					.addOption(ExportType.png, ExportType.png)
+					.addOption(ExportType.svg, ExportType.svg)
+					.setValue(this.plugin.settings.exportType)
+					.onChange(async (value) => {
+						this.exportType = value;
+					})
+			});
+
 		new Setting(settings).setName("Transparent background")
 		.addToggle((toggle) => {
 			toggle
@@ -113,11 +127,23 @@ export class ExportModal extends Modal {
 
 				for (let i = 0; i < this.graphs.length; i++) {
 					const canvas = this.graphs[i].getElementsByTagName("canvas").item(0);
-					const svg = this.svgs[i];
+					let svg = this.svgs[i];
+
+					if (this.transparentBackground) {
+						svg = svg.replace(/style="background-color: #[0-9a-fA-F]+; /, "style=\"background-color: transparent; ");
+					}
+					else {
+						svg = svg.replace("style=\"background-color: transparent; ", "style=\"background-color: " + document.body.getCssPropertyValue("--background-secondary") + "; ")
+					} 
+
+					this.svgs[i] = svg;
+
+					console.log(svg);
 
 					if (svg && canvas) {
 						this.renderCanvas(canvas, svg);
 					}
+					
 				}
 			})
 		})
@@ -194,20 +220,26 @@ export class ExportModal extends Modal {
 					else if (this.saveLocation == "/") {
 						this.saveLocation = "";
 					}
-					const path = this.saveLocation + fileName + ".png";
+					const path = this.saveLocation + fileName + "." + this.exportType ;
 					const file = this.app.vault.getFileByPath(path);
 					if (!file) {
-						const arr = canvas.toDataURL("image/png").split(",");
-						const bstr = atob(arr[1]); // Decode the base64 string
-						const u8arr = new Uint8Array(bstr.length);
 
-						// Convert the binary string to an array buffer
-						for (let i = 0; i < bstr.length; i++) {
-							u8arr[i] = bstr.charCodeAt(i);
+						if (this.exportType == ExportType.png) {
+							const arr = canvas.toDataURL("image/png").split(",");
+							const bstr = atob(arr[1]); // Decode the base64 string
+							const u8arr = new Uint8Array(bstr.length);
+
+							// Convert the binary string to an array buffer
+							for (let i = 0; i < bstr.length; i++) {
+								u8arr[i] = bstr.charCodeAt(i);
+							}
+
+							//@ts-ignore
+							this.app.vault.create(path, u8arr);
 						}
-
-						//@ts-ignore
-						this.app.vault.create(path, u8arr);
+						else {
+							this.app.vault.create(path, this.svgs[graphNumber-1]);
+						}
 					}
 					else {
 						new Notice("File \"" + path + "\" already exists", 5000);

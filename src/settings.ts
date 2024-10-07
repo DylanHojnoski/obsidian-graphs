@@ -8,6 +8,7 @@ export interface GraphsSettings {
 	alignment: string;
 	defaultExportLocation: string;
 	transparentBackground: boolean;
+	exportType: string;
 }
 
 enum Alignment {
@@ -16,12 +17,18 @@ enum Alignment {
 	right = "0 0 0 auto",
 }
 
+export enum ExportType {
+	png = "png",
+	svg = "svg",
+}
+
 export const DEFAULT_SETTINGS: Partial<GraphsSettings> = {
 	height: 300,
 	width: 700,
 	alignment: Alignment.center,
 	defaultExportLocation: "",
 	transparentBackground: false,
+	exportType: ExportType.png,
 };
 
 export class GraphsSettingsTab extends PluginSettingTab {
@@ -94,6 +101,19 @@ export class GraphsSettingsTab extends PluginSettingTab {
 				await this.plugin.saveSettings();
 			}))
 		});
+
+		new Setting(this.containerEl) 
+			.setName("File type")
+			.addDropdown((dropdown) => {
+				dropdown
+					.addOption(ExportType.png, ExportType.png)
+					.addOption(ExportType.svg, ExportType.svg)
+					.setValue(this.plugin.settings.exportType)
+					.onChange(async (value) => {
+						this.plugin.settings.exportType = value;
+						await this.plugin.saveSettings();
+					})
+			});
 
 		new Setting(this.containerEl).setName("Transparent background")
 		.addToggle((toggle) => {
