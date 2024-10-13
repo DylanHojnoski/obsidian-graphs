@@ -232,8 +232,7 @@ export class ExportModal extends Modal {
 								u8arr[i] = bstr.charCodeAt(i);
 							}
 
-							//@ts-ignore
-							this.app.vault.create(path, u8arr);
+							this.app.vault.createBinary(path, u8arr);
 						}
 						else {
 							this.app.vault.create(path, this.svgs[graphNumber-1]);
