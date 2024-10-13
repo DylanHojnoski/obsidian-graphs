@@ -55,15 +55,15 @@ export class ExportModal extends Modal {
 	}
 
 	renderCanvas(canvas: HTMLCanvasElement, svg: string) {
-		const widthString = svg.match(/width="([0-9]+)"/);
-		const heightString = svg.match(/height="([0-9]+)"/);
+		const widthString = svg.match(/width="([0-9]+.?[0-9]+)"/);
+		const heightString = svg.match(/height="([0-9]+.?[0-9]+)"/);
 
 		let width = 0;
 		let height = 0;
 
 		if (widthString && heightString) {
-			width = Number.parseInt(widthString[1]);
-			height = Number.parseInt(heightString[1]);
+			width = Number.parseFloat(widthString[1]);
+			height = Number.parseFloat(heightString[1]);
 		}
 
 		const ctx = canvas.getContext("2d");
@@ -172,15 +172,15 @@ export class ExportModal extends Modal {
 				this.svgs.push(svg);
 			}
 
-			const widthString = svg.match(/width="([0-9]+)"/);
-			const heightString = svg.match(/height="([0-9]+)"/);
+			const widthString = svg.match(/width="([0-9]+.?[0-9]+)"/);
+			const heightString = svg.match(/height="([0-9]+.?[0-9]+)"/);
 
 			let width = 0;
 			let height = 0;
 
 			if (widthString && heightString) {
-				width = Number.parseInt(widthString[1]);
-				height = Number.parseInt(heightString[1]);
+				width = Number.parseFloat(widthString[1]);
+				height = Number.parseFloat(heightString[1]);
 			}
 
 			if (width <=  0 || height <= 0) {
