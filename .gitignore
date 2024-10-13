@@ -22,5 +22,6 @@ data.json
 .DS_Store
 
 # syyncthing
-.stfolder
-.syyncthing*
+.stfolder/
+.syncthing*
+.stignore
