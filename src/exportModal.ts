@@ -56,8 +56,6 @@ export class ExportModal extends Modal {
 		const  style = "<style>.JXG_navigation {display: none;}</style>"
 		decoded = beginning + style + ending;
 
-		console.log(decoded);
-
 		return decoded;
 	}
 
