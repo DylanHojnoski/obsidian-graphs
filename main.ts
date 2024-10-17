@@ -18,6 +18,7 @@ export default class Graphs extends Plugin {
 
 		this.addSettingTab(new GraphsSettingsTab(this.app, this));
 
+		// add syntax highlighting
 		window.CodeMirror.defineMode("graph", config => window.CodeMirror.getMode(config, "javascript"));
 
 		await loadMathJax();
@@ -34,10 +35,12 @@ export default class Graphs extends Plugin {
 			await MathJax.startup.getComponents();
 		}
 
+		// remove unused boards when opening a new file
 		this.app.workspace.on("file-open" , () => {
 			this.cullBoards();
 		});
 
+		// remove unused boards when opening closing a window
 		this.app.workspace.on("window-close", () => {
 			this.cullBoards();
 		})
@@ -47,6 +50,7 @@ export default class Graphs extends Plugin {
 			name: "Export graphs",
 			checkCallback: (checking: boolean) => {
 				const view = this.app.workspace.getActiveViewOfType(MarkdownView)?.getMode();
+				// only have the command available while in read mode
 				if (view == "preview") {
 					if (!checking) {
 						const graphs = []
@@ -55,7 +59,7 @@ export default class Graphs extends Plugin {
 						for (const graph of activeGraphs) {
 							const div: HTMLElement = graph.board.containerObj;
 
-							// check the if it is in the active files
+							// check the if is in the active files
 							if (!div.hasClass("LivePreview")) {
 								graphs.push(graph.board);
 							}
@@ -102,6 +106,7 @@ export default class Graphs extends Plugin {
 				return;
 			}
 
+			// add graph to map based on file name
 			if (this.graphs.has(currentFileName)) {
 				this.graphs.get(currentFileName)?.push(graph);
 			}
@@ -125,6 +130,7 @@ export default class Graphs extends Plugin {
 	}
 
 	onunload() {
+		// remove all of the graphs
 		for (const key of this.graphs.keys()) {
 			const graphs: Graph[] = this.graphs.get(key) ?? [];
 
@@ -138,6 +144,8 @@ export default class Graphs extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+
+		// set the css variables
 		document.documentElement.style.setProperty("--graph-height", this.settings.height + "px");
 		document.documentElement.style.setProperty("--graph-width", this.settings.width + "px");
 		document.documentElement.style.setProperty("--graph-alignment", this.settings.alignment);
@@ -162,6 +170,7 @@ export default class Graphs extends Plugin {
 		const files = this.app.workspace.getLeavesOfType("markdown");
 		files.forEach((file) => activeFileNames.push(file.getDisplayText().replace(/\s/g, "")));
 
+		// if the graph is not in an active file remove it
 		for (const key of this.graphs.keys()) {
 			if (!activeFileNames.contains(key)) {
 				const graphs: Graph[] = this.graphs.get(key) ?? [];
