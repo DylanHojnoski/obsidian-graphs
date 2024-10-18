@@ -17,6 +17,7 @@ export class Utils {
 	}
 
 	parseCodeBlock(source: string, is3d : boolean) :GraphInfo {
+		// set default values
 		let graph: GraphInfo = {bounds: [0,0,0,0],
 								maxBoundingBox: JXG.Options.board.maxBoundingBox,
 								keepAspectRatio: false,
@@ -37,6 +38,7 @@ export class Utils {
 		try {
 			graph = parseYaml(source);
 
+			// change board values
 			if (graph.maxBoundingBox == undefined) {
 				graph.maxBoundingBox = JXG.Options.board.maxBoundingBox;
 			}
@@ -103,15 +105,19 @@ export class Utils {
 			view3d: undefined
 		}
 
+		// set graph width and height if specified
 		if (graphInfo.height) {
 			graphDiv.style.height = graphInfo.height + "px";
 		}
 		if (graphInfo.width) {
 			graphDiv.style.maxWidth = graphInfo.width + "px";
 		}
+
+		// if 3d bounds is specified create a 3d board
 		if (graphInfo.bounds3d != undefined) {
 			this.validate3dBounds(graphInfo.bounds3d);
 
+			// define position of 3d board on the 2d area
 			const xLength = Math.abs(graphInfo.bounds[2]-graphInfo.bounds[0]);
 			const yLength = Math.abs(graphInfo.bounds[1]-graphInfo.bounds[3]);
 			const xMin = graphInfo.bounds[0] + xLength*0.15; 
@@ -124,6 +130,7 @@ export class Utils {
 			}
 
 
+			// create the 3d board
 			if (graphInfo.att3d == undefined) {
 				graph.view3d = board.create("view3d", element.def);
 			}
@@ -174,6 +181,7 @@ export class Utils {
 		let createdElement: GeometryElement;
 		let createOn: Board | View3D = graph.board;
 
+		// if it is a 3d element it needs to be created on the 3d board
 		if (element.type.contains("3d") ) {
 			if (graph.view3d != undefined) {
 				createOn = graph.view3d;
@@ -195,6 +203,7 @@ export class Utils {
 	}
 
 	private validateElement(element: ElementInfo, createdElements: JSXElement[]) {
+		// The type and def need to be defined
 		if (element.type == undefined &&  element.def == undefined) {
 			throw new SyntaxError("Element " + createdElements.length + " type and def is not defined");
 		}
@@ -210,11 +219,14 @@ export class Utils {
 	}
 
 	private validateDef(def: any, createdElements: JSXElement[]) {
+		// check each index of the def
 		for (let i = 0; i < def.length; i++) {
+			// if it is an array check recusively within the array
 			if (Array.isArray(def[i])) {
 				this.validateDef(def[i], createdElements);
 			}
 
+			// if it is a string check for composed elements and fuctions
 			if (typeof def[i] === "string") {
 				const index = this.checkComposedElements(def[i], createdElements);
 				if (index >= 0) {
@@ -226,6 +238,7 @@ export class Utils {
 	}
 
 	private checkComposedElements(item: string, createdElements: JSXElement[]): number {
+		// composed elements are used with the string "e" followed by the index of the element
 		const re  = new RegExp("^e[0-9]+$");
 		// if it is a string and passes the regex test add the element to def
 		if (re.test(item)) {
@@ -243,6 +256,7 @@ export class Utils {
 
 	private checkComposedAtts(att: Attributes | Att3d, createdElements: JSXElement[]) {
 		if (att != undefined) {
+			// check all attributes for composed attributes
 			for (const key of Object.keys(att)) {
 				//@ts-ignore
 				if (typeof att[key] === 'object') {
@@ -262,6 +276,8 @@ export class Utils {
 				const index = this.checkComposedElements(attribute.anchor, createdElements);
 				attribute.anchor = createdElements[index].element;
 			}
+
+			// change color values to obsidian theme colors
 			if (typeof attribute.fillColor === 'string') {
 				attribute.fillColor = this.changeColorValue(attribute.fillColor);
 			}
@@ -318,6 +334,7 @@ export class Utils {
 				// go through composed elements and and validate and replace with proper string
 				const index = this.checkComposedElements(composed[0], createdElements);
 
+				// replace composed element with with the array value for the element
 				if (createdElements[index].name == Types.Slider || createdElements[index].name  == Types.Riemannsum || createdElements[index].name == Types.Integral) {
 					item = item.replace(re, "createdElements["+index+"].element.Value()");
 				}
@@ -330,6 +347,7 @@ export class Utils {
 
 			const equation = item;
 
+			// default function paramaters are x, y, z 
 			let functionParams: string[] = ["x", "y", "z"]; 
 
 			if (func[1] != undefined) {
