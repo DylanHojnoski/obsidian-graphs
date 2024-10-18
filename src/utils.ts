@@ -16,8 +16,8 @@ export class Utils {
 		}
 	}
 
-	parseCodeBlock(source: string) :GraphInfo {
-		// set defualt values
+	parseCodeBlock(source: string, is3d : boolean) :GraphInfo {
+		// set default values
 		let graph: GraphInfo = {bounds: [0,0,0,0],
 								maxBoundingBox: JXG.Options.board.maxBoundingBox,
 								keepAspectRatio: false,
@@ -47,16 +47,31 @@ export class Utils {
 				graph.showNavigation = true;
 			}
 
-			if (graph.axis == undefined) {
-				graph.axis = true;
+			if (is3d) {
+				if (graph.bounds3d == undefined) {
+					graph.bounds3d = [[-5,5],[-5,5],[-5,5]];
+				}
+				if (graph.axis == undefined) {
+					graph.axis = false;
+				}
+				if (graph.keepAspectRatio == undefined) {
+					graph.keepAspectRatio = true;
+				}
+			} else {
+				if (graph.axis == undefined) {
+					graph.axis = true;
+				}
 			}
-
 			if (graph.defaultAxes == undefined) {
 				graph.defaultAxes = JXG.Options.board.defaultAxes;
 			}
 
 			if (graph.drag == undefined) {
 				graph.drag = true;
+			}
+
+			if (graph.bounds == undefined) {
+				graph.bounds = [-10,10,10,-10]
 			}
 
 			return graph;
