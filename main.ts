@@ -1,4 +1,4 @@
-import { loadMathJax, MarkdownView, Plugin } from 'obsidian';
+import { loadMathJax, MarkdownPostProcessorContext, MarkdownView, Plugin } from 'obsidian';
 import { JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { Graph, GraphInfo } from 'src/types';
@@ -19,6 +19,7 @@ export default class Graphs extends Plugin {
 		this.addSettingTab(new GraphsSettingsTab(this.app, this));
 
 		window.CodeMirror.defineMode("graph", config => window.CodeMirror.getMode(config, "javascript"));
+		window.CodeMirror.defineMode("graph3d", config => window.CodeMirror.getMode(config, "javascript"));
 
 		await loadMathJax();
 
@@ -69,11 +70,20 @@ export default class Graphs extends Plugin {
 		});
 
 		this.registerMarkdownCodeBlockProcessor("graph", (source, element) => {
+			this.handleCodeBlock(source, element, false);
+		});
+		this.registerMarkdownCodeBlockProcessor("graph3d", (source, element) => {
+			this.handleCodeBlock(source, element, true);
+		});
+	}
+	
+	handleCodeBlock(source:string, element : HTMLElement, is3d : boolean) {
+		{
 			let graphInfo: GraphInfo;
 
 			try {
 				// parse the JSON from the code block
-				graphInfo = this.utils.parseCodeBlock(source);
+				graphInfo = this.utils.parseCodeBlock(source, is3d);
 			} catch (e) {
 				renderError(e,element);
 				return;
@@ -121,7 +131,7 @@ export default class Graphs extends Plugin {
 					}
 				}
 			}
-		});
+		}
 	}
 
 	onunload() {
