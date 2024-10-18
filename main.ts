@@ -1,4 +1,4 @@
-import { loadMathJax, MarkdownPostProcessorContext, MarkdownView, Plugin } from 'obsidian';
+import { loadMathJax, MarkdownView, Plugin } from 'obsidian';
 import { JSXGraph } from 'jsxgraph';
 import { renderError } from 'src/error';
 import { Graph, GraphInfo } from 'src/types';
@@ -6,10 +6,10 @@ import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, GraphsSettings as GraphsSettings, GraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
 import { ExportModal } from 'src/exportModal';
+import { randomUUID } from 'crypto';
 
 export default class Graphs extends Plugin {
 	settings: GraphsSettings
-	count = 0;
 	utils: Utils = new Utils();
 	graphs: Map<string, Graph[]> = new Map();
 
@@ -60,7 +60,7 @@ export default class Graphs extends Plugin {
 						for (const graph of activeGraphs) {
 							const div: HTMLElement = graph.board.containerObj;
 
-							// check the if is in the active files
+							// check if board is from read mode or live preview
 							if (!div.hasClass("LivePreview")) {
 								graphs.push(graph.board);
 							}
@@ -81,12 +81,12 @@ export default class Graphs extends Plugin {
 		});
 	}
 	
-	handleCodeBlock(source:string, element : HTMLElement, is3d : boolean) {
+	handleCodeBlock(source:string, element: HTMLElement, is3d: boolean) {
 		{
 			let graphInfo: GraphInfo;
 
 			try {
-				// parse the JSON from the code block
+				// parse the YAML from the code block
 				graphInfo = this.utils.parseCodeBlock(source, is3d);
 			} catch (e) {
 				renderError(e,element);
@@ -95,7 +95,6 @@ export default class Graphs extends Plugin {
 
 			let graph: Graph;
 
-			// if the current file name is undefined need to get the current file
 			const currentFileName = this.getCurrentFileName();
 
 			// create the div that contains the board
@@ -105,8 +104,7 @@ export default class Graphs extends Plugin {
 				graphDiv.addClass("LivePreview");
 			}
 
-			graphDiv.id = "graph" + this.count;
-			this.count++;
+			graphDiv.id = randomUUID();
 
 			try {
 				// create the board

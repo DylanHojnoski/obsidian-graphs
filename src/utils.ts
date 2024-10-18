@@ -16,14 +16,15 @@ export class Utils {
 		}
 	}
 
-	parseCodeBlock(source: string, is3d : boolean) :GraphInfo {
+	parseCodeBlock(source: string, is3d: boolean) :GraphInfo {
 		// set default values
 		let graph: GraphInfo = {bounds: [0,0,0,0],
 								maxBoundingBox: JXG.Options.board.maxBoundingBox,
 								keepAspectRatio: false,
 								drag: true,
 								showNavigation: true,
-								axis: true, defaultAxes: JXG.Options.board.defaultAxes,
+								axis: true,
+								defaultAxes: JXG.Options.board.defaultAxes,
 								elements: [],
 								height: undefined,
 								width: undefined,
@@ -39,6 +40,10 @@ export class Utils {
 			graph = parseYaml(source);
 
 			// change board values
+			if (graph.bounds == undefined) {
+				graph.bounds = [-10,10,10,-10]
+			}
+
 			if (graph.maxBoundingBox == undefined) {
 				graph.maxBoundingBox = JXG.Options.board.maxBoundingBox;
 			}
@@ -68,10 +73,6 @@ export class Utils {
 
 			if (graph.drag == undefined) {
 				graph.drag = true;
-			}
-
-			if (graph.bounds == undefined) {
-				graph.bounds = [-10,10,10,-10]
 			}
 
 			return graph;
@@ -136,8 +137,7 @@ export class Utils {
 			}
 			else {
 				this.checkComposedAtts(element.att as Att3d, graph.createdElements);
-				//@ts-ignore
-				graph.view3d = board.create(element.type, element.def, element.att);
+				graph.view3d = board.create("view3d", element.def, element.att);
 			}
 		}
 
