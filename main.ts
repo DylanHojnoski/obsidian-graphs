@@ -6,11 +6,11 @@ import "./src/theme/obsidian.ts"
 import { DEFAULT_SETTINGS, GraphsSettings as GraphsSettings, GraphsSettingsTab } from 'src/settings';
 import { Utils } from 'src/utils';
 import { ExportModal } from 'src/exportModal';
-import { randomUUID } from 'crypto';
 
 export default class Graphs extends Plugin {
 	settings: GraphsSettings
 	utils: Utils = new Utils();
+	count = 0;
 	graphs: Map<string, Graph[]> = new Map();
 
 	async onload () {
@@ -104,7 +104,8 @@ export default class Graphs extends Plugin {
 				graphDiv.addClass("LivePreview");
 			}
 
-			graphDiv.id = randomUUID();
+			graphDiv.id = "graph" + this.count;
+			this.count++;
 
 			try {
 				// create the board
