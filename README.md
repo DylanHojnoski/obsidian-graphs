@@ -5,7 +5,7 @@
 
 Plugin of [Obsidian](https://obsidian.md/) that creates interactive graphs from YAML.
 
-This file only covers the basics of how to use this plugin for more information go to [Graphs Wiki](https://github.com/DylanHojnoski/obsidian-graphs/wiki).
+This file only covers the basics of how to use this plugin for more information go to [Graphs Wiki](https://dylanhojnoski.github.io/obsidian-graphs-wiki/).
 
 If you have a cool graph that helps show the capabilities of this plugin please post it in this thread [discussion](https://github.com/DylanHojnoski/obsidian-graphs/discussions/15).
 
@@ -83,7 +83,9 @@ If you find any bugs with this plugin please create a new issue so that they can
 
 If you want to contribute please create an issue or pull request.
 
-You can suggest changes to the wiki by editing the files in the `wiki` folder and submiting a pull request.
+For making changes to the wiki you can find the repository [here](https://github.com/DylanHojnoski/obsidian-graphs-wiki/tree/v4).
+All of the pages are markdown files in the content folder.
+
 
 ## Attribution
 
