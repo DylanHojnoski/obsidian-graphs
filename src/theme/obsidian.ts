@@ -120,6 +120,10 @@ JXG.themes['obsidian'] = {
 		strokeColor: interactiveAccent,
 	},
 
+	plane3d: {
+		fillColor: interactiveAccent
+	},
+
 	sphere3d: {
 		fillColor: interactiveAccent,
 		strokeColor: interactiveAccent,
